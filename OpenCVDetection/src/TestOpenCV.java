@@ -18,7 +18,7 @@ public class TestOpenCV {
 	public static void main(String[] args) {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		// TODO Auto-generated method stub
-		Mat img = Imgcodecs.imread("C:\\Users\\Mohammed\\Google Drive\\Second Year\\QHacks\\OpenCVDetection\\src\\check.jpg", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+		Mat img = Imgcodecs.imread("C:\\Users\\Mohammed\\Google Drive\\Second Year\\QHacks\\QHacks2017\\OpenCVDetection\\src\\check5.png", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
 //		Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2GRAY);
 		Imgproc.blur(img, img, new Size(3, 3));
 		Imgproc.Canny(img, img, 50,  95, 3, false);
@@ -54,11 +54,6 @@ public class TestOpenCV {
 				}
 			}
 		}
-		
-
-		
-		
-		Imgproc.erode(img, img, kernel);
 		
 		
 		List<MatOfPoint> contours = new ArrayList<>();
@@ -106,10 +101,13 @@ public class TestOpenCV {
                     squares.add(new MatOfPoint(approx.toArray()));
             }
         }
-		Mat m = new Mat(img.size(), CvType.CV_32S);
-		img.copyTo(m);
-		Imgproc.drawContours(m, squares, -1, new Scalar(80,52,74),3);
-		Imgcodecs.imwrite("C:\\Users\\Mohammed\\Google Drive\\Second Year\\QHacks\\OpenCVDetection\\src\\output.jpg", m);
+		
+		for (MatOfPoint matOfPoint : squares) {
+			Imgproc.circle(img, new Point(matOfPoint.get(1, 0)), 20,new Scalar(255));
+		}
+		System.out.println(squares.size());
+		Imgproc.erode(img, img, kernel);
+		Imgcodecs.imwrite("C:\\Users\\Mohammed\\Google Drive\\Second Year\\QHacks\\QHacks2017\\OpenCVDetection\\src\\output.jpg", img);
 	}
 	
 	static double angle( double[] ds, double[] ds2, double[] ds3 )
