@@ -4,10 +4,12 @@ import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
 import com.leapmotion.leap.Controller;
+import com.leapmotion.leap.Vector;
 
 class Sample {
 	public static void main(String[] args) {
-
+		
+		
 		JFrame window = new JFrame("Cali");
 		window.setSize(1920, 1080);
 		window.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
