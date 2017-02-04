@@ -114,21 +114,21 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 			return;
 		}
 		// Get the most recent frame and report some basic information
-		// robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int)
-		// finger.tipPosition().getX()),
-		// map(yRange[0],yRange[1],0,window.getHeight(),(int)
-		// finger.tipPosition().getY()));
+//		 robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int)
+//		 finger.tipPosition().getX()),
+//		 map(yRange[0],yRange[1],0,window.getHeight(),(int)
+//		 finger.tipPosition().getY()));
 		Vector poi = screenPlane.getPOI(finger.tipPosition(), finger.direction());
 		robot.mouseMove((int)poi.getX(), (int)poi.getY());
-		if (finger.tipPosition().getZ() < zClick && !clicked) {
-			robot.mousePress(InputEvent.BUTTON1_MASK);
-			System.out.println("Click");
-		}
-		if (clicked && finger.tipPosition().getZ() > zClick + 5) {
-			robot.mouseRelease(InputEvent.BUTTON1_MASK);
-			System.out.println("unclick");
-			clicked = false;
-		}
+//		if (finger.tipPosition().getZ() < zClick && !clicked) {
+//			robot.mousePress(InputEvent.BUTTON1_MASK);
+//			System.out.println("Click");
+//		}
+//		if (clicked && finger.tipPosition().getZ() > zClick + 5) {
+//			robot.mouseRelease(InputEvent.BUTTON1_MASK);
+//			System.out.println("unclick");
+//			clicked = false;
+//		}
 
 	}
 
