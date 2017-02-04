@@ -106,6 +106,7 @@ class MouseController extends Listener implements KeyListener {
         	System.out.println(finger.tipPosition().toString());
             if(finger.tipPosition().getZ()<zClick){
             	robot.mousePress(InputEvent.BUTTON1_MASK);
+            }else{
             	robot.mouseRelease(InputEvent.BUTTON1_MASK);
             }
         System.out.println("Frame id: " + frame.id()
