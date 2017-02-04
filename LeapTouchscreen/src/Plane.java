@@ -8,24 +8,31 @@ public class Plane {
 	Vector normal;
 	float d;
 	
+	Vector[] vertices;
+	Vector[] dirs;
 	Line3D[] lineBounds; 	//4 lines representing the bounding sides of the plane
 	
 	
 
-	public Plane(Vector p1, Vector p2, Vector p3) {
-		v1 = new Vector(p2.minus(p1));
-		v2 = new Vector(p3.minus(p1));
+	public Plane(Vector[][] p) {
+		v1 = new Vector(p[1][0].minus(p[0][0]));
+		v2 = new Vector(p[2][0].minus(p[0][0]));
+		
+		vertices = new Vector[]{p[0][0],p[1][0],p[2][0],p[3][0]};
+		dirs = new Vector[]{p[0][1],p[1][1],p[2][1],p[3][1]};
+		
+		lineBounds = new Line3D[]{new Line3D(p[0][0], v1),
+								  new Line3D(p[0][0], v2),
+								  new Line3D(p[1][0], v2),
+								  new Line3D(p[2][0], v1)};
 		
 		
-		lineBounds = new Line3D[]{new Line3D(p1, v1),
-								  new Line3D(p1, v2),
-								  new Line3D(p2, v2),
-								  new Line3D(p3, v1)};
 		
 		normal = v1.cross(v2).normalized();
+		
 		d = 0;
 		for (int i = 0; i < 3; i++) {
-			d += normal.get(i) * p1.get(i);
+			d += normal.get(i) * p[0][0].get(i);
 		}
 		
 		
