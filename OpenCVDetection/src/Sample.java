@@ -33,7 +33,7 @@ class MouseController extends Listener implements KeyListener {
 	private boolean calibrationMode = true;
 	private int caliState = 0;
 	private Point[] corners = new Point[4];
-	private String[] cornerNames = { "Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right" };
+	
 	private Calibrator c;
 	private boolean flag = false;
 	
@@ -42,6 +42,8 @@ class MouseController extends Listener implements KeyListener {
 	public MouseController(Calibrator c, JFrame window) {
 		this.c = c;
 		this.window = window;
+		
+		
 	}
 
 	public void onInit(Controller controller) {
@@ -87,7 +89,13 @@ class MouseController extends Listener implements KeyListener {
     			flag = false;
     			caliState++;
     			if(caliState > 3){
+    				calcBounds(corners);
     				calibrationMode = false;
+    				window.dispose();
+    			}else{
+    				int[][] cornerCoords = {{0,0},{window.getWidth(), 0}, {0, window.getHeight()}, {window.getWidth(), window.getHeight()}};
+    				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
+    				c.repaint();
     			}
     		}
     		return;
@@ -102,22 +110,28 @@ class MouseController extends Listener implements KeyListener {
         System.out.println("Frame id: " + frame.id()
                          + ", timestamp: " + frame.timestamp()
                          + ", hands: " + frame.hands().count()
-                         + ", fingers: " + frame.fingers().count());
-
-        //Get hands
-        
-           
-            
-  
+                         + ", fingers: " + frame.fingers().count());          
     }
 
 	private int map(int rmin, int rmax, int vmin, int vmax, int value) {
 		return (int) ((float) (value - rmin) / (rmax - rmin) * (vmax - vmin) + vmin);
 	}
+	
+	private void calcBounds(Point[] coords){
+		xRange[0] = (coords[0].x + coords[2].x)/2;
+		xRange[1] = (coords[1].x + coords[3].x)/2;
+		
+		yRange[0] = (coords[0].y + coords[1].y)/2;
+		yRange[1] = (coords[2].y + coords[3].y)/2;
+		
+	}
+	
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
+		flag = true;
+		System.out.println("key");
 
 	}
 
@@ -142,6 +156,8 @@ class Sample {
 		window.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	
 		//window.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		window.setUndecorated(true);
+		window.setFocusable(true);
+		window.requestFocus();
 		
 		
 		Calibrator cali = new Calibrator();
