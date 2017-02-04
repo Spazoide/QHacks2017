@@ -15,6 +15,8 @@ public class Calibrator extends JComponent{
 		this.y=y;
 	}
 	
+	
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -22,6 +24,12 @@ public class Calibrator extends JComponent{
 		g.setColor(Color.red);
 		g.fillOval(x-50, y-50, 100, 100);
 		
+	}
+	
+	protected void paintText(Graphics g){
+		super.paintComponent(g);
+		g.setColor(Color.WHITE);
+		g.drawString("Hover finger over screen at comfortable distance and press any key.", x, y-100);
 	}
 
 

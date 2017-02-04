@@ -91,15 +91,21 @@ class MouseController extends Listener implements KeyListener, MouseListener {
     			corners[caliState] = finger.tipPosition();
     			flag = false;
     			caliState++;
-    			if(caliState > 3){
+    			if(caliState > 2){
     				calcBounds();
-    				calibrationMode = false;
-    				window.dispose();
+    				
+    			}else if(caliState > 3){
+    				int[][] cornerCoords = {{0,0},{window.getWidth(), 0}, {0, window.getHeight()}, {window.getWidth(), window.getHeight()}, {window.getWidth()/2, window.getHeight()/2}};
+    				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
+    				
     			}else{
-    				int[][] cornerCoords = {{0,0},{window.getWidth(), 0}, {0, window.getHeight()}, {window.getWidth(), window.getHeight()}};
+    				int[][] cornerCoords = {{0,0},{window.getWidth(), 0}, {0, window.getHeight()}, {window.getWidth(), window.getHeight()}, {window.getWidth()/2, window.getHeight()/2}};
     				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
     				c.repaint();
     			}
+    			
+    			calibrationMode = false;
+				window.dispose();
     		}
     		return;
     	}
