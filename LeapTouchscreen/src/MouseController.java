@@ -40,6 +40,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private Calibrator c;
 	private boolean flag = false;
 	private Plane screenPlane;
+	private Plane exitPlane;
 	private JFrame window;
 
 	public MouseController(Calibrator c, JFrame window) {
@@ -88,8 +89,9 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 			calibrationMode(finger);
 			return;
 		}
-
-		if(finger.tipPosition().getZ()>corners[4][0].getZ()){
+		
+		//if current offset is bigger then calibrated offset exit the method to halt finger tracking.
+		if(screenPlane.getOffsetValue(finger.tipPosition()) > screenPlane.getOffsetValue(corners[4][0])){
 			return;
 		}
 		// Get the most recent frame and report some basic information
@@ -142,6 +144,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private void calcBounds() {
 		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ())/ 4);
 		screenPlane = new Plane(corners);
+		exitPlane = screenPlane.offset(corners[4][0]);
 
 	}
 
