@@ -15,6 +15,8 @@ import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.lang.Math;
 
@@ -25,7 +27,7 @@ import javax.swing.WindowConstants;
 
 import com.leapmotion.leap.*;
 
-class MouseController extends Listener implements KeyListener {
+class MouseController extends Listener implements KeyListener, MouseListener {
 
 	Robot robot;
 	private int[] yRange = new int[2];
@@ -149,6 +151,36 @@ class MouseController extends Listener implements KeyListener {
 		// TODO Auto-generated method stub
 
 	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		flag=true;
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class Sample {
@@ -171,6 +203,7 @@ class Sample {
 		
 
 		window.addKeyListener(listener);
+		window.addMouseListener(listener);
 		window.add(cali);
 		window.setVisible(true);
 		
