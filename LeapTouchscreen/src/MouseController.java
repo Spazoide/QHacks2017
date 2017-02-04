@@ -35,7 +35,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private int zClick;
 	private boolean calibrationMode = true;
 	private int caliState = 0;
-	private Vector[] corners = new Vector[5];
+	private Vector[][] corners = new Vector[5][2];
 	private boolean clicked = false;
 	private Calibrator c;
 	private boolean flag = false;
@@ -83,11 +83,31 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				break;
 			}
 		}
+		
+		calibrationMode(finger);
 
+		// Get the most recent frame and report some basic information
+		int[] pos = screenPlane.getPOIScaled(finger.tipPosition(), finger.direction(), window.getWidth(), window.getHeight());
+		robot.mouseMove(pos[0], pos[1]);
+		
+//		if (finger.tipPosition().getZ() < zClick && !clicked) {
+//			robot.mousePress(InputEvent.BUTTON1_MASK);
+//			System.out.println("Click");
+//		}
+//		if (clicked && finger.tipPosition().getZ() > zClick + 5) {
+//			robot.mouseRelease(InputEvent.BUTTON1_MASK);
+//			System.out.println("unclick");
+//			clicked = false;
+//		}
+
+	}
+	
+	private void calibrationMode(Finger finger){
 		if (calibrationMode) {
 
 			if (flag) {
-				corners[caliState] = finger.tipPosition();
+				corners[caliState][0] = finger.tipPosition();
+				corners[caliState][1] = finger.direction();
 				flag = false;
 				caliState++;
 				if (caliState > 4) {
@@ -113,38 +133,11 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 			}
 			return;
 		}
-		// Get the most recent frame and report some basic information
-//		 robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int)
-//		 finger.tipPosition().getX()),
-//		 map(yRange[0],yRange[1],0,window.getHeight(),(int)
-//		 finger.tipPosition().getY()));
-		int[] pos = screenPlane.getPOIScaled(finger.tipPosition(), finger.direction(), window.getWidth(), window.getHeight());
-		robot.mouseMove(pos[0], pos[1]);
-		
-//		if (finger.tipPosition().getZ() < zClick && !clicked) {
-//			robot.mousePress(InputEvent.BUTTON1_MASK);
-//			System.out.println("Click");
-//		}
-//		if (clicked && finger.tipPosition().getZ() > zClick + 5) {
-//			robot.mouseRelease(InputEvent.BUTTON1_MASK);
-//			System.out.println("unclick");
-//			clicked = false;
-//		}
-
 	}
 
-	
-
 	private void calcBounds() {
-		xRange[0] = (int) (corners[0].getX() + corners[2].getX()) / 2;
-		xRange[1] = (int) ((corners[1].getX() + corners[3].getX()) / 2);
-
-		yRange[0] = (int) ((corners[0].getY() + corners[1].getY()) / 2);
-		yRange[1] = (int) ((corners[2].getY() + corners[3].getY()) / 2);
-
-		zClick = (int) ((corners[0].getZ() + corners[1].getZ() + corners[2].getZ() + corners[3].getZ()) / 4);
-
-		screenPlane = new Plane(corners[0], corners[1], corners[2]);
+		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ()) / 4);
+		screenPlane = new Plane(corners);
 
 	}
 
