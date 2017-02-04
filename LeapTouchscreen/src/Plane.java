@@ -55,7 +55,7 @@ public class Plane {
 	
 	public int[] getPOIScaled(Vector pos, Vector dir, int width, int height){
 		Vector newDir = getCorrectedDirection(pos, dir, width, height);
-		Vector currentPos = getPOI(pos, newDir);
+		Vector currentPos = getPOI(pos, dir);
 		Line3D xline = new Line3D(currentPos, v1);
 		Line3D yline = new Line3D(currentPos, v2);
 		

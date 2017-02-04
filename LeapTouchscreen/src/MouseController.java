@@ -83,9 +83,15 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				break;
 			}
 		}
+		
+		if(calibrationMode){
+			calibrationMode(finger);
+			return;
+		}
 
-		calibrationMode(finger);
-
+		if(finger.tipPosition().getZ()>corners[4][0].getZ()){
+			return;
+		}
 		// Get the most recent frame and report some basic information
 		int[] pos = screenPlane.getPOIScaled(finger.tipPosition(), finger.direction(), window.getWidth(),window.getHeight());
 		robot.mouseMove(pos[0], pos[1]);
@@ -103,36 +109,34 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	}
 
 	private void calibrationMode(Finger finger) {
-		if (calibrationMode) {
+		
+		if (flag) {
+			corners[caliState][0] = finger.tipPosition();
+			corners[caliState][1] = finger.direction();
+			flag = false;
+			caliState++;
+			if (caliState > 4) {
+				calcBounds();
+				calibrationMode = false;
+				window.dispose();
+			} else if (caliState > 3) {
+				int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
+						{ window.getWidth(), window.getHeight() },
+						{ window.getWidth() / 2, window.getHeight() / 2 } };
+				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
+				c.text = true;
+				c.repaint();
 
-			if (flag) {
-				corners[caliState][0] = finger.tipPosition();
-				corners[caliState][1] = finger.direction();
-				flag = false;
-				caliState++;
-				if (caliState > 4) {
-					calcBounds();
-					calibrationMode = false;
-					window.dispose();
-				} else if (caliState > 3) {
-					int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
-							{ window.getWidth(), window.getHeight() },
-							{ window.getWidth() / 2, window.getHeight() / 2 } };
-					c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
-					c.text = true;
-					c.repaint();
-
-				} else {
-					int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
-							{ window.getWidth(), window.getHeight() },
-							{ window.getWidth() / 2, window.getHeight() / 2 } };
-					c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
-					c.repaint();
-				}
-
+			} else {
+				int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
+						{ window.getWidth(), window.getHeight() },
+						{ window.getWidth() / 2, window.getHeight() / 2 } };
+				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
+				c.repaint();
 			}
-			return;
+
 		}
+		
 	}
 
 	private void calcBounds() {
