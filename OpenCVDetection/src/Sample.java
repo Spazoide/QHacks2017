@@ -8,6 +8,7 @@
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.io.IOException;
 import java.lang.Math;
 import com.leapmotion.leap.*;
@@ -77,9 +78,10 @@ class SampleListener extends Listener {
         			continue;
         		a.mouseMove(map(-165,175,0,1920,(int) finger.tipPosition().getX()), 1080-map(120,305,0,1080,(int) finger.tipPosition().getY()));
 	        	System.out.println(finger.tipPosition().toString());
-	            System.out.println("    " + finger.type() + ", id: " + finger.id()
-                                 + ", length: " + finger.length()
-                                 + "mm, width: " + finger.width() + "mm");
+	            if(finger.tipPosition().getZ()<-50){
+	            	a.mousePress(InputEvent.BUTTON1_MASK);
+	            	a.mouseRelease(InputEvent.BUTTON1_MASK);
+	            }
 
         	}
            
