@@ -7,7 +7,8 @@ import javax.swing.JComponent;
 
 public class Calibrator extends JComponent{
 
-	private int x,y;
+	private int x = 0;
+	private int y = 0;
 	
 	public void setCirclePos(int x, int y){
 		this.x=x;
@@ -18,7 +19,7 @@ public class Calibrator extends JComponent{
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		g.setColor(Color.red);
-		g.fillOval(0, 0, 100, 100);
+		g.fillOval(x, y, 100, 100);
 		
 	}
 

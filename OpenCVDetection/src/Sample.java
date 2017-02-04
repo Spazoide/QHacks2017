@@ -1,3 +1,4 @@
+
 /******************************************************************************\
 * Copyright (C) 2012-2016 Leap Motion, Inc. All rights reserved.               *
 * Leap Motion proprietary and confidential. Not for distribution.              *
@@ -30,124 +31,130 @@ class MouseController extends Listener implements KeyListener {
 	private int[] yRange = new int[2];
 	private int[] xRange = new int[2];
 	private boolean calibrationMode = true;
-	private int caliState = 3;
+	private int caliState = 0;
 	private Point[] corners = new Point[4];
-	private String[] cornerNames = {"Top-Left","Top-Right","Bottom-Left","Bottom-Right"};
+	private String[] cornerNames = { "Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right" };
 	private Calibrator c;
-	
-	public MouseController(Calibrator c){
-		this.c=c;
+	private boolean flag = false;
+
+	public MouseController(Calibrator c) {
+		this.c = c;
 	}
-	
-    public void onInit(Controller controller) {
-        System.out.println("Initialized");
-        try {
-			robot=new Robot();
+
+	public void onInit(Controller controller) {
+		System.out.println("Initialized");
+		try {
+			robot = new Robot();
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
-    }
 
-    public void onConnect(Controller controller) {
-        System.out.println("Connected");
-    }
+	}
 
-    public void onDisconnect(Controller controller) {
-        //Note: not dispatched when running in a debugger.
-        System.out.println("Disconnected");
-    }
+	public void onConnect(Controller controller) {
+		System.out.println("Connected");
+	}
 
-    public void onExit(Controller controller) {
-        System.out.println("Exited");
-    }
+	public void onDisconnect(Controller controller) {
+		// Note: not dispatched when running in a debugger.
+		System.out.println("Disconnected");
+	}
 
-    private void calibration(){
+	public void onExit(Controller controller) {
+		System.out.println("Exited");
+	}
+
+	public void onFrame(Controller controller) {
+    	Finger finger;
+    	Frame frame = controller.frame();
+    	for(Hand hand: frame.hands()){
+	    	for(Finger f: hand.fingers()){
+	    		if(f.type()!=Finger.Type.TYPE_INDEX)
+	    			continue;
+	    		finger=f;
+	    		break;
+	    	}
+    	}
     	
-    }
-    
-    public void onFrame(Controller controller) {
+    	if(calibrationMode){
+    		
+    		if(flag){
+    			corners[caliState] = finger.new Point(arg0, arg1)
+    		}
+    		return;
+    	}
         // Get the most recent frame and report some basic information
-        Frame frame = controller.frame();
+       robot.mouseMove(map(-165,175,0,1920,(int) finger.tipPosition().getX()), 1080-map(120,305,0,1080,(int) finger.tipPosition().getY()));
+        	System.out.println(finger.tipPosition().toString());
+            if(finger.tipPosition().getZ()<-50){
+            	robot.mousePress(InputEvent.BUTTON1_MASK);
+            	robot.mouseRelease(InputEvent.BUTTON1_MASK);
+            }
         System.out.println("Frame id: " + frame.id()
                          + ", timestamp: " + frame.timestamp()
                          + ", hands: " + frame.hands().count()
                          + ", fingers: " + frame.fingers().count());
 
         //Get hands
-        Hand hand = frame.hand(0);
-    	for(Finger finger: hand.fingers()){
-    		if(finger.type()!=Finger.Type.TYPE_INDEX)
-    			continue;
-    		robot.mouseMove(map(-165,175,0,1920,(int) finger.tipPosition().getX()), 1080-map(120,305,0,1080,(int) finger.tipPosition().getY()));
-        	System.out.println(finger.tipPosition().toString());
-            if(finger.tipPosition().getZ()<-50){
-            	robot.mousePress(InputEvent.BUTTON1_MASK);
-            	robot.mouseRelease(InputEvent.BUTTON1_MASK);
-            }
-
-    	}
+        
            
             
   
     }
-    
-    private int map(int rmin, int rmax,int vmin, int vmax, int value){
-    	return (int)((float)(value-rmin)/(rmax-rmin)*(vmax-vmin)+vmin);
-    }
+
+	private int map(int rmin, int rmax, int vmin, int vmax, int value) {
+		return (int) ((float) (value - rmin) / (rmax - rmin) * (vmax - vmin) + vmin);
+	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
 
 class Sample {
-    public static void main(String[] args) {
-    	
-    	Calibrator cali = new Calibrator();
-    	MouseController listener = new MouseController(cali);
-        Controller controller = new Controller();
-    	
-    	JFrame window = new JFrame("Cali");
-    	window.setSize(1920, 1080);
-    	window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    	window.setVisible(true);
-    	
-    	window.addKeyListener(listener);
-    	
-    	
-    	window.add(cali);
-    	
-        // Create a sample listener and controller
-        
+	public static void main(String[] args) {
 
-        // Have the sample listener receive events from the controller
-        controller.addListener(listener);
+		Calibrator cali = new Calibrator();
+		MouseController listener = new MouseController(cali);
+		Controller controller = new Controller();
 
-        // Keep this process running until Enter is pressed
-        System.out.println("Press Enter to quit...");
-        try {
-            System.in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+		JFrame window = new JFrame("Cali");
+		window.setSize(1920, 1080);
+		window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		window.setVisible(true);
 
-        // Remove the sample listener when done
-        controller.removeListener(listener);
-    }
+		window.addKeyListener(listener);
+		window.add(cali);
+
+		// Create a sample listener and controller
+
+		// Have the sample listener receive events from the controller
+		controller.addListener(listener);
+
+		// Keep this process running until Enter is pressed
+		System.out.println("Press Enter to quit...");
+		try {
+			System.in.read();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Remove the sample listener when done
+		controller.removeListener(listener);
+	}
 }
