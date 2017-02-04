@@ -112,6 +112,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
             if(clicked && finger.tipPosition().getZ()>zClick+5){
             	robot.mouseRelease(InputEvent.BUTTON1_MASK);
             	System.out.println("unclick");
+            	clicked = false;
             }
      
     }
