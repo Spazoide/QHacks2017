@@ -102,7 +102,7 @@ class MouseController extends Listener implements KeyListener {
     		return;
     	}
         // Get the most recent frame and report some basic information
-       robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int) finger.tipPosition().getX()), window.getHeight()-map(yRange[0],yRange[1],0,window.getHeight(),(int) finger.tipPosition().getY()));
+       robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int) finger.tipPosition().getX()), map(yRange[0],yRange[1],0,window.getHeight(),(int) finger.tipPosition().getY()));
         	System.out.println(finger.tipPosition().toString());
             if(finger.tipPosition().getZ()<zClick){
             	robot.mousePress(InputEvent.BUTTON1_MASK);
@@ -122,8 +122,8 @@ class MouseController extends Listener implements KeyListener {
 		xRange[0] = (int) (corners[0].getX() + corners[2].getX()) /2;
 		xRange[1] = (int) ((corners[1].getX()  + corners[3].getX() )/2);
 		
-		yRange[0] = (int) ((corners[0].getY() + corners[1].getY() )/2);
-		yRange[1] = (int) ((corners[2].getY()  + corners[3].getY() )/2);
+		yRange[0] = (int) ((corners[0].getY() + corners[1].getY())/2);
+		yRange[1] = (int) ((corners[2].getY()  + corners[3].getY())/2);
 		
 		zClick = (int) ((corners[0].getZ()+corners[1].getZ()+corners[2].getZ()+corners[3].getZ())/4);
 	}
