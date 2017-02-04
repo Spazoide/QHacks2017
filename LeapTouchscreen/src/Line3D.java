@@ -14,13 +14,13 @@ public class Line3D {
 
 	public Vector getPOI(Line3D line) {
 
-		double[][] vals = new double[2][3];
+		double[][] vals = new double[3][2];
 		double[][] ans = new double[3][1];
 	
 			
 		for (int i = 0; i < 3; i++) {
-			vals[0][i] = dir.get(i);
-			vals[1][i] = -1*line.dir.get(i);
+			vals[i][0] = -1*dir.get(i);
+			vals[i][1] = line.dir.get(i);
 			ans[i][0] = pos.get(0)-line.pos.get(i);
 		}
 			
@@ -29,7 +29,7 @@ public class Line3D {
 		Matrix b = new Matrix(ans);
 		Matrix x = A.solve(b);
 		
-		return x.get;
+		return pos.plus(dir.times((float) x.get(0,0)));
 
 	}
 }
