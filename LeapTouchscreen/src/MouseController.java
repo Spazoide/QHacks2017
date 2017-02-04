@@ -69,6 +69,14 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		System.out.println("Disconnected");
 	}
 
+	private void calcBounds() {
+		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ())
+				/ 4);
+		screenPlane = new Plane(corners);
+		// exitPlane = screenPlane.offset(corners[4][0]);
+	
+	}
+
 	public void onExit(Controller controller) {
 		System.out.println("Exited");
 	}
@@ -84,34 +92,42 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				break;
 			}
 		}
-		
-		if(calibrationMode){
+
+		if (calibrationMode) {
 			calibrationMode(finger);
 			return;
 		}
-		
-		//if current offset is bigger then calibrated offset exit the method to halt finger tracking.
-		if(screenPlane.getOffsetValue(finger.tipPosition()) > screenPlane.getOffsetValue(corners[4][0])){
+
+		// if current offset is bigger then calibrated offset exit the method to
+		// halt finger tracking.
+		Vector fingerPos = finger.tipPosition();
+		Vector fingerDir = finger.direction();
+		if (screenPlane.getOffsetValue(fingerPos) > screenPlane.getOffsetValue(corners[4][0])) {
 			return;
 		}
+
+		// The drag zone 420 blaze it
+
 		// Get the most recent frame and report some basic information
-		int[] pos = screenPlane.getPOIScaled(finger.tipPosition(), finger.direction(), window.getWidth(),window.getHeight());
+		int[] pos = screenPlane.getPOIScaled(fingerPos, fingerDir, window.getWidth(), window.getHeight());
 		robot.mouseMove(pos[0], pos[1]);
 
-		// if (finger.tipPosition().getZ() < zClick && !clicked) {
-		// robot.mousePress(InputEvent.BUTTON1_MASK);
-		// System.out.println("Click");
-		// }
-		// if (clicked && finger.tipPosition().getZ() > zClick + 5) {
-		// robot.mouseRelease(InputEvent.BUTTON1_MASK);
-		// System.out.println("unclick");
-		// clicked = false;
-		// }
+		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
+		if (fingerPos.getZ() <= currentZ) {
+			if(!clicked){
+				robot.mousePress(InputEvent.BUTTON1_MASK);
+				robot.mouseRelease(InputEvent.BUTTON1_MASK);
+				clicked = true;
+			}
+		}else{
+			clicked=false;
+		}
+		
 
 	}
 
 	private void calibrationMode(Finger finger) {
-		
+	
 		if (flag) {
 			corners[caliState][0] = finger.tipPosition();
 			corners[caliState][1] = finger.direction();
@@ -123,29 +139,20 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				window.dispose();
 			} else if (caliState > 3) {
 				int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
-						{ window.getWidth(), window.getHeight() },
-						{ window.getWidth() / 2, window.getHeight() / 2 } };
+						{ window.getWidth(), window.getHeight() }, { window.getWidth() / 2, window.getHeight() / 2 } };
 				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
 				c.text = true;
 				c.repaint();
-
+	
 			} else {
 				int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
-						{ window.getWidth(), window.getHeight() },
-						{ window.getWidth() / 2, window.getHeight() / 2 } };
+						{ window.getWidth(), window.getHeight() }, { window.getWidth() / 2, window.getHeight() / 2 } };
 				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
 				c.repaint();
 			}
-
+	
 		}
-		
-	}
-
-	private void calcBounds() {
-		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ())/ 4);
-		screenPlane = new Plane(corners);
-		exitPlane = screenPlane.offset(corners[4][0]);
-
+	
 	}
 
 	@Override
