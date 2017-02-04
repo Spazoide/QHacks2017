@@ -9,6 +9,7 @@ public class Calibrator extends JComponent{
 
 	private int x = 0;
 	private int y = 0;
+	public boolean text = false;
 	
 	public void setCirclePos(int x, int y){
 		this.x=x;
@@ -24,15 +25,12 @@ public class Calibrator extends JComponent{
 		g.setColor(Color.red);
 		g.fillOval(x-50, y-50, 100, 100);
 		
+		if(text){
+			g.setColor(Color.WHITE);
+			g.drawString("Hover finger over screen at comfortable distance and press any key.", x, y-100);
+		}
+		
 	}
-	
-	protected void paintText(Graphics g){
-		super.paintComponent(g);
-		g.setColor(Color.WHITE);
-		g.drawString("Hover finger over screen at comfortable distance and press any key.", x, y-100);
-	}
-
-
 	
 	
 
