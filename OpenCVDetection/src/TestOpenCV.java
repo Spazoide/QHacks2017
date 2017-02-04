@@ -18,7 +18,7 @@ public class TestOpenCV {
 	public static void main(String[] args) {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		// TODO Auto-generated method stub
-		Mat img = Imgcodecs.imread("C:\\Users\\Mohammed\\Google Drive\\Second Year\\QHacks\\QHacks2017\\OpenCVDetection\\src\\check5.png", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+		Mat img = Imgcodecs.imread("C:\\Users\\Mohammed\\Google Drive\\Second Year\\QHacks\\QHacks2017\\OpenCVDetection\\src\\check6.png", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
 //		Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2GRAY);
 		Imgproc.blur(img, img, new Size(3, 3));
 		Imgproc.Canny(img, img, 50,  95, 3, false);
@@ -101,7 +101,6 @@ public class TestOpenCV {
                     squares.add(new MatOfPoint(approx.toArray()));
             }
         }
-		
 		for (MatOfPoint matOfPoint : squares) {
 			Imgproc.circle(img, new Point(matOfPoint.get(1, 0)), 20,new Scalar(255));
 		}
