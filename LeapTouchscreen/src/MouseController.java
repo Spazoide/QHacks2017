@@ -83,26 +83,26 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				break;
 			}
 		}
-		
+
 		calibrationMode(finger);
 
 		// Get the most recent frame and report some basic information
-		int[] pos = screenPlane.getPOIScaled(finger.tipPosition(), finger.direction(), window.getWidth(), window.getHeight());
+		int[] pos = screenPlane.getPOIScaled(finger.tipPosition(), finger.direction(), window.getWidth(),window.getHeight());
 		robot.mouseMove(pos[0], pos[1]);
-		
-//		if (finger.tipPosition().getZ() < zClick && !clicked) {
-//			robot.mousePress(InputEvent.BUTTON1_MASK);
-//			System.out.println("Click");
-//		}
-//		if (clicked && finger.tipPosition().getZ() > zClick + 5) {
-//			robot.mouseRelease(InputEvent.BUTTON1_MASK);
-//			System.out.println("unclick");
-//			clicked = false;
-//		}
+
+		// if (finger.tipPosition().getZ() < zClick && !clicked) {
+		// robot.mousePress(InputEvent.BUTTON1_MASK);
+		// System.out.println("Click");
+		// }
+		// if (clicked && finger.tipPosition().getZ() > zClick + 5) {
+		// robot.mouseRelease(InputEvent.BUTTON1_MASK);
+		// System.out.println("unclick");
+		// clicked = false;
+		// }
 
 	}
-	
-	private void calibrationMode(Finger finger){
+
+	private void calibrationMode(Finger finger) {
 		if (calibrationMode) {
 
 			if (flag) {
@@ -114,7 +114,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 					calcBounds();
 					calibrationMode = false;
 					window.dispose();
-				}else if(caliState > 3){
+				} else if (caliState > 3) {
 					int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
 							{ window.getWidth(), window.getHeight() },
 							{ window.getWidth() / 2, window.getHeight() / 2 } };
@@ -129,14 +129,14 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 					c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
 					c.repaint();
 				}
-				
+
 			}
 			return;
 		}
 	}
 
 	private void calcBounds() {
-		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ()) / 4);
+		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ())/ 4);
 		screenPlane = new Plane(corners);
 
 	}

@@ -27,7 +27,7 @@ public class Calibrator extends JComponent{
 		
 		if(text){
 			g.setColor(Color.WHITE);
-			g.drawString("Hover finger over screen at comfortable distance and press any key.", x, y-100);
+			g.drawString("Hover finger over screen at comfortable distance and press any key.", x-50, y-100);
 		}
 		
 	}

@@ -8,12 +8,16 @@ public class Plane {
 	Vector normal;
 	float d;
 	
-	Vector[] vertices;
-	Vector[] dirs;
+	Vector[] vertices;		//vector array containing the finger position measured for the 4 corners
+	Vector[] dirs;			//Vector array containing the finger direction that was measured for the 4 corners
 	Line3D[] lineBounds; 	//4 lines representing the bounding sides of the plane
 	
 	
-
+	/**
+	 * Plane Class constructor
+	 * @param p 
+	 * @return void
+	 */
 	public Plane(Vector[][] p) {
 		v1 = new Vector(p[1][0].minus(p[0][0]));
 		v2 = new Vector(p[2][0].minus(p[0][0]));
