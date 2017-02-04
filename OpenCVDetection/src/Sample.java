@@ -35,7 +35,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private int zClick;
 	private boolean calibrationMode = true;
 	private int caliState = 0;
-	private Vector[] corners = new Vector[4];
+	private Vector[] corners = new Vector[5];
 	private boolean clicked = false;
 	private Calibrator c;
 	private boolean flag = false;
@@ -90,18 +90,18 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				corners[caliState] = finger.tipPosition();
 				flag = false;
 				caliState++;
-				if (caliState > 3) {
+				if (caliState > 4) {
+					calcBounds();
+					calibrationMode = false;
+					window.dispose();
+				}else if(caliState > 3){
 					int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
 							{ window.getWidth(), window.getHeight() },
 							{ window.getWidth() / 2, window.getHeight() / 2 } };
 					c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
 					c.text = true;
 					c.repaint();
-				}else if(caliState > 4){
-					calcBounds();
-					calibrationMode = false;
-					window.dispose();
-					}
+
 				} else {
 					int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
 							{ window.getWidth(), window.getHeight() },
