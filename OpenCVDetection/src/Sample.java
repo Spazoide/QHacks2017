@@ -36,7 +36,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private boolean calibrationMode = true;
 	private int caliState = 0;
 	private Vector[] corners = new Vector[4];
-	
+	private boolean clicked = false;
 	private Calibrator c;
 	private boolean flag = false;
 	
@@ -105,16 +105,15 @@ class MouseController extends Listener implements KeyListener, MouseListener {
     	}
         // Get the most recent frame and report some basic information
        robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int) finger.tipPosition().getX()), map(yRange[0],yRange[1],0,window.getHeight(),(int) finger.tipPosition().getY()));
-        	System.out.println(finger.tipPosition().toString());
-            if(finger.tipPosition().getZ()<zClick){
+            if(finger.tipPosition().getZ()<zClick && !clicked){
             	robot.mousePress(InputEvent.BUTTON1_MASK);
-            }else{
-            	robot.mouseRelease(InputEvent.BUTTON1_MASK);
+            	System.out.println("Click");
             }
-        System.out.println("Frame id: " + frame.id()
-                         + ", timestamp: " + frame.timestamp()
-                         + ", hands: " + frame.hands().count()
-                         + ", fingers: " + frame.fingers().count());          
+            if(clicked && finger.tipPosition().getZ()>zClick+5){
+            	robot.mouseRelease(InputEvent.BUTTON1_MASK);
+            	System.out.println("unclick");
+            }
+     
     }
 
 	private int map(int rmin, int rmax, int vmin, int vmax, int value) {
