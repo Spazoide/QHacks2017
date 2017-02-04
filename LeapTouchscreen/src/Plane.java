@@ -50,7 +50,8 @@ public class Plane {
 	}
 	
 	public int[] getPOIScaled(Vector pos, Vector dir, int width, int height){
-		Vector currentPos = getPOI(pos, dir);
+		Vector newDir = getCorrectedDirection(pos, dir, width, height);
+		Vector currentPos = getPOI(pos, newDir);
 		Line3D xline = new Line3D(currentPos, v1);
 		Line3D yline = new Line3D(currentPos, v2);
 		
@@ -64,21 +65,22 @@ public class Plane {
 		
 	}
 	
-	public Vector getCorrectedDirection(Vector pos, Vector dir, Vector[] cornerDirections, int width, int height){
+	public Vector getCorrectedDirection(Vector pos, Vector dir,int width, int height){
 		double maxLen = Math.sqrt(width*width/4.+height*height/4);
-		int[][] cornerCoords = { { 0, 0 }, { width, 0 }, { 0, height },
-				{ width, height },
-				{ width / 2, height / 2 } };
-		
 		double cornerWeights[] = new double[4];
 		double sum = 0;
 		
 		for (int i = 0; i < cornerWeights.length; i++) {
-			double tempDist = pos.distanceTo(lineBounds[])
-			cornerWeights = 
+			double tempDist = pos.distanceTo(vertices[i])/maxLen;
+			cornerWeights[i] = tempDist>1?0:tempDist;
+			sum+=cornerWeights[i];
 		}
 		
-		return null;
+		Vector v = dir.times((float) (1-(sum<1?sum:1)));
+		for (int i = 0; i < cornerWeights.length; i++) {
+			v.plus(dirs[i].times((float) cornerWeights[i]));
+		}
+		return v;
 	}
 	
 
