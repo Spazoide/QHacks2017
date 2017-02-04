@@ -56,5 +56,23 @@ public class Plane {
 		return new int[] {map(xmin,xmax,0,width,currentPos.getX()), map(ymin,ymax,0,height,currentPos.getY())};
 		
 	}
+	
+	public Vector getCorrectedDirection(Vector pos, Vector dir, Vector[] cornerDirections, int width, int height){
+		double maxLen = Math.sqrt(width*width/4.+height*height/4);
+		int[][] cornerCoords = { { 0, 0 }, { width, 0 }, { 0, height },
+				{ width, height },
+				{ width / 2, height / 2 } };
+		
+		double cornerWeights[] = new double[4];
+		double sum = 0;
+		
+		for (int i = 0; i < cornerWeights.length; i++) {
+			double tempDist = pos.distanceTo(lineBounds[])
+			cornerWeights = 
+		}
+		
+		return null;
+	}
+	
 
 }
