@@ -36,9 +36,12 @@ class MouseController extends Listener implements KeyListener {
 	private String[] cornerNames = { "Top-Left", "Top-Right", "Bottom-Left", "Bottom-Right" };
 	private Calibrator c;
 	private boolean flag = false;
-
-	public MouseController(Calibrator c) {
+	
+	private JFrame window;
+	
+	public MouseController(Calibrator c, JFrame window) {
 		this.c = c;
+		this.window = window;
 	}
 
 	public void onInit(Controller controller) {
@@ -66,7 +69,7 @@ class MouseController extends Listener implements KeyListener {
 	}
 
 	public void onFrame(Controller controller) {
-    	Finger finger;
+    	Finger finger = null;
     	Frame frame = controller.frame();
     	for(Hand hand: frame.hands()){
 	    	for(Finger f: hand.fingers()){
@@ -80,7 +83,12 @@ class MouseController extends Listener implements KeyListener {
     	if(calibrationMode){
     		
     		if(flag){
-    			corners[caliState] = finger.new Point(arg0, arg1)
+    			corners[caliState] = new Point((int)finger.tipPosition().getX(), (int)finger.tipPosition().getY());
+    			flag = false;
+    			caliState++;
+    			if(caliState > 3){
+    				calibrationMode = false;
+    			}
     		}
     		return;
     	}
@@ -128,19 +136,25 @@ class MouseController extends Listener implements KeyListener {
 
 class Sample {
 	public static void main(String[] args) {
-
-		Calibrator cali = new Calibrator();
-		MouseController listener = new MouseController(cali);
-		Controller controller = new Controller();
-
+		
 		JFrame window = new JFrame("Cali");
 		window.setSize(1920, 1080);
-		window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		window.setVisible(true);
+		window.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	
+		//window.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		window.setUndecorated(true);
+		
+		
+		Calibrator cali = new Calibrator();
+		MouseController listener = new MouseController(cali , window);
+		Controller controller = new Controller();
+
+		
+		
 
 		window.addKeyListener(listener);
 		window.add(cali);
-
+		window.setVisible(true);
+		
 		// Create a sample listener and controller
 
 		// Have the sample listener receive events from the controller
