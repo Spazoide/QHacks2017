@@ -27,6 +27,8 @@ public class Plane {
 		return new Vector(pos.get(0) + dir.get(0) * t, pos.get(1) + dir.get(1) * t, pos.get(2) + dir.get(2) * t);
 	}
 	
-	
+	private int map(int rmin, int rmax, int vmin, int vmax, int value) {
+		return (int) ((float) (value - rmin) / (rmax - rmin) * (vmax - vmin) + vmin);
+	}
 
 }
