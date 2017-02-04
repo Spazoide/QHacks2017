@@ -18,10 +18,10 @@ public class Line3D {
 		double[][] ans = new double[3][1];
 	
 			
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < 2; i++) {
 			vals[i][0] = -1*dir.get(i);
 			vals[i][1] = line.dir.get(i);
-			ans[i][0] = pos.get(0)-line.pos.get(i);
+			ans[i][0] = pos.get(i)-line.pos.get(i);
 		}
 			
 		

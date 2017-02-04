@@ -118,8 +118,9 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 //		 finger.tipPosition().getX()),
 //		 map(yRange[0],yRange[1],0,window.getHeight(),(int)
 //		 finger.tipPosition().getY()));
-		Vector poi = screenPlane.getPOI(finger.tipPosition(), finger.direction());
-		robot.mouseMove((int)poi.getX(), (int)poi.getY());
+		int[] pos = screenPlane.getPOIScaled(finger.tipPosition(), finger.direction(), window.getWidth(), window.getHeight());
+		robot.mouseMove(pos[0], pos[1]);
+		
 //		if (finger.tipPosition().getZ() < zClick && !clicked) {
 //			robot.mousePress(InputEvent.BUTTON1_MASK);
 //			System.out.println("Click");
@@ -132,9 +133,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 
 	}
 
-	private int map(int rmin, int rmax, int vmin, int vmax, int value) {
-		return (int) ((float) (value - rmin) / (rmax - rmin) * (vmax - vmin) + vmin);
-	}
+	
 
 	private void calcBounds() {
 		xRange[0] = (int) (corners[0].getX() + corners[2].getX()) / 2;
