@@ -18,8 +18,9 @@ public class Calibrator extends JComponent{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		g.fillRect(0, 0, g.getClipBounds().width, g.getClipBounds().width);
 		g.setColor(Color.red);
-		g.fillOval(x, y, 100, 100);
+		g.fillOval(x-50, y-50, 100, 100);
 		
 	}
 
