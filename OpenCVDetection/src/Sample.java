@@ -7,26 +7,47 @@
 \******************************************************************************/
 
 import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.lang.Math;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.WindowConstants;
+
 import com.leapmotion.leap.*;
 
-class SampleListener extends Listener {
+class MouseController extends Listener implements KeyListener {
 
-	Robot a;
+	Robot robot;
+	private int[] yRange = new int[2];
+	private int[] xRange = new int[2];
+	private boolean calibrationMode = true;
+	private int caliState = 3;
+	private Point[] corners = new Point[4];
+	private String[] cornerNames = {"Top-Left","Top-Right","Bottom-Left","Bottom-Right"};
+	private Calibrator c;
+	
+	public MouseController(Calibrator c){
+		this.c=c;
+	}
 	
     public void onInit(Controller controller) {
         System.out.println("Initialized");
         try {
-			a=new Robot();
+			robot=new Robot();
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
-        System.out.println(map(0, 50, 50, 100, 25));
     }
 
     public void onConnect(Controller controller) {
@@ -42,6 +63,10 @@ class SampleListener extends Listener {
         System.out.println("Exited");
     }
 
+    private void calibration(){
+    	
+    }
+    
     public void onFrame(Controller controller) {
         // Get the most recent frame and report some basic information
         Frame frame = controller.frame();
@@ -51,59 +76,65 @@ class SampleListener extends Listener {
                          + ", fingers: " + frame.fingers().count());
 
         //Get hands
-        for(Hand hand : frame.hands()) {
-//            String handType = hand.isLeft() ? "Left hand" : "Right hand";
-//            System.out.println("  " + handType + ", id: " + hand.id()
-//                             + ", palm position: " + hand.palmPosition());
-//
-//            // Get the hand's normal vector and direction
-//            Vector normal = hand.palmNormal();
-//            Vector direction = hand.direction();
-//
-//            // Calculate the hand's pitch, roll, and yaw angles
-//            System.out.println("  pitch: " + Math.toDegrees(direction.pitch()) + " degrees, "
-//                             + "roll: " + Math.toDegrees(normal.roll()) + " degrees, "
-//                             + "yaw: " + Math.toDegrees(direction.yaw()) + " degrees");
-//
-//            // Get arm bone
-//            Arm arm = hand.arm();
-//            System.out.println("  Arm direction: " + arm.direction()
-//                             + ", wrist position: " + arm.wristPosition()
-//                             + ", elbow position: " + arm.elbowPosition());
-
-            // Get fingers
-        	
-        	for(Finger finger: hand.fingers()){
-        		if(finger.type()!=Finger.Type.TYPE_INDEX)
-        			continue;
-        		a.mouseMove(map(-165,175,0,1920,(int) finger.tipPosition().getX()), 1080-map(120,305,0,1080,(int) finger.tipPosition().getY()));
-	        	System.out.println(finger.tipPosition().toString());
-	            if(finger.tipPosition().getZ()<-50){
-	            	a.mousePress(InputEvent.BUTTON1_MASK);
-	            	a.mouseRelease(InputEvent.BUTTON1_MASK);
-	            }
-
-        	}
-           
+        Hand hand = frame.hand(0);
+    	for(Finger finger: hand.fingers()){
+    		if(finger.type()!=Finger.Type.TYPE_INDEX)
+    			continue;
+    		robot.mouseMove(map(-165,175,0,1920,(int) finger.tipPosition().getX()), 1080-map(120,305,0,1080,(int) finger.tipPosition().getY()));
+        	System.out.println(finger.tipPosition().toString());
+            if(finger.tipPosition().getZ()<-50){
+            	robot.mousePress(InputEvent.BUTTON1_MASK);
+            	robot.mouseRelease(InputEvent.BUTTON1_MASK);
             }
-        
 
-        if (!frame.hands().isEmpty()) {
-            System.out.println();
-        }
+    	}
+           
+            
+  
     }
     
     private int map(int rmin, int rmax,int vmin, int vmax, int value){
     	return (int)((float)(value-rmin)/(rmax-rmin)*(vmax-vmin)+vmin);
     }
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 class Sample {
     public static void main(String[] args) {
-    	System.out.println(Finger.Type.TYPE_INDEX.ordinal());
-        // Create a sample listener and controller
-        SampleListener listener = new SampleListener();
+    	
+    	Calibrator cali = new Calibrator();
+    	MouseController listener = new MouseController(cali);
         Controller controller = new Controller();
+    	
+    	JFrame window = new JFrame("Cali");
+    	window.setSize(1920, 1080);
+    	window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    	window.setVisible(true);
+    	
+    	window.addKeyListener(listener);
+    	
+    	
+    	window.add(cali);
+    	
+        // Create a sample listener and controller
+        
 
         // Have the sample listener receive events from the controller
         controller.addListener(listener);
