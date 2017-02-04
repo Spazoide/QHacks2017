@@ -39,14 +39,13 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private boolean clicked = false;
 	private Calibrator c;
 	private boolean flag = false;
-	
+	private Plane screenPlane;
 	private JFrame window;
-	
+
 	public MouseController(Calibrator c, JFrame window) {
 		this.c = c;
 		this.window = window;
-		
-		
+
 	}
 
 	public void onInit(Controller controller) {
@@ -74,69 +73,78 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	}
 
 	public void onFrame(Controller controller) {
-    	Finger finger = null;
-    	Frame frame = controller.frame();
-    	for(Hand hand: frame.hands()){
-	    	for(Finger f: hand.fingers()){
-	    		if(f.type()!=Finger.Type.TYPE_INDEX)
-	    			continue;
-	    		finger=f;
-	    		break;
-	    	}
-    	}
-    	
-    	if(calibrationMode){
-    		
-    		if(flag){
-    			corners[caliState] = finger.tipPosition();
-    			flag = false;
-    			caliState++;
-    			if(caliState > 2){
-    				calcBounds();
-    				
-    			}else if(caliState > 3){
-    				int[][] cornerCoords = {{0,0},{window.getWidth(), 0}, {0, window.getHeight()}, {window.getWidth(), window.getHeight()}, {window.getWidth()/2, window.getHeight()/2}};
-    				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
-    				
-    			}else{
-    				int[][] cornerCoords = {{0,0},{window.getWidth(), 0}, {0, window.getHeight()}, {window.getWidth(), window.getHeight()}, {window.getWidth()/2, window.getHeight()/2}};
-    				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
-    				c.repaint();
-    			}
-    			
-    			calibrationMode = false;
-				window.dispose();
-    		}
-    		return;
-    	}
-        // Get the most recent frame and report some basic information
-       robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int) finger.tipPosition().getX()), map(yRange[0],yRange[1],0,window.getHeight(),(int) finger.tipPosition().getY()));
-            if(finger.tipPosition().getZ()<zClick && !clicked){
-            	robot.mousePress(InputEvent.BUTTON1_MASK);
-            	System.out.println("Click");
-            }
-            if(clicked && finger.tipPosition().getZ()>zClick+5){
-            	robot.mouseRelease(InputEvent.BUTTON1_MASK);
-            	System.out.println("unclick");
-            	clicked = false;
-            }
-     
-    }
+		Finger finger = null;
+		Frame frame = controller.frame();
+		for (Hand hand : frame.hands()) {
+			for (Finger f : hand.fingers()) {
+				if (f.type() != Finger.Type.TYPE_INDEX)
+					continue;
+				finger = f;
+				break;
+			}
+		}
+
+		if (calibrationMode) {
+
+			if (flag) {
+				corners[caliState] = finger.tipPosition();
+				flag = false;
+				caliState++;
+				if (caliState > 2) {
+					calcBounds();
+				} else if (caliState > 3) {
+					int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
+							{ window.getWidth(), window.getHeight() },
+							{ window.getWidth() / 2, window.getHeight() / 2 } };
+					c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
+					calibrationMode = false;
+					window.dispose();
+				} else {
+					int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
+							{ window.getWidth(), window.getHeight() },
+							{ window.getWidth() / 2, window.getHeight() / 2 } };
+					c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
+					c.repaint();
+				}
+
+			}
+			return;
+		}
+		// Get the most recent frame and report some basic information
+		// robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int)
+		// finger.tipPosition().getX()),
+		// map(yRange[0],yRange[1],0,window.getHeight(),(int)
+		// finger.tipPosition().getY()));
+		Vector poi = screenPlane.getPOI(finger.tipPosition(), finger.direction());
+		robot.mouseMove((int)poi.getX(), (int)poi.getY());
+		if (finger.tipPosition().getZ() < zClick && !clicked) {
+			robot.mousePress(InputEvent.BUTTON1_MASK);
+			System.out.println("Click");
+		}
+		if (clicked && finger.tipPosition().getZ() > zClick + 5) {
+			robot.mouseRelease(InputEvent.BUTTON1_MASK);
+			System.out.println("unclick");
+			clicked = false;
+		}
+
+	}
 
 	private int map(int rmin, int rmax, int vmin, int vmax, int value) {
 		return (int) ((float) (value - rmin) / (rmax - rmin) * (vmax - vmin) + vmin);
 	}
-	
-	private void calcBounds(){
-		xRange[0] = (int) (corners[0].getX() + corners[2].getX()) /2;
-		xRange[1] = (int) ((corners[1].getX()  + corners[3].getX() )/2);
-		
-		yRange[0] = (int) ((corners[0].getY() + corners[1].getY())/2);
-		yRange[1] = (int) ((corners[2].getY()  + corners[3].getY())/2);
-		
-		zClick = (int) ((corners[0].getZ()+corners[1].getZ()+corners[2].getZ()+corners[3].getZ())/4);
+
+	private void calcBounds() {
+		xRange[0] = (int) (corners[0].getX() + corners[2].getX()) / 2;
+		xRange[1] = (int) ((corners[1].getX() + corners[3].getX()) / 2);
+
+		yRange[0] = (int) ((corners[0].getY() + corners[1].getY()) / 2);
+		yRange[1] = (int) ((corners[2].getY() + corners[3].getY()) / 2);
+
+		zClick = (int) ((corners[0].getZ() + corners[1].getZ() + corners[2].getZ() + corners[3].getZ()) / 4);
+
+		screenPlane = new Plane(corners[0], corners[1], corners[2]);
+
 	}
-	
 
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -161,58 +169,54 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		flag=true;
+		flag = true;
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }
 
 class Sample {
 	public static void main(String[] args) {
-		
+
 		JFrame window = new JFrame("Cali");
 		window.setSize(1920, 1080);
-		window.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	
+		window.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
 		window.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		window.setUndecorated(true);
 		window.setFocusable(true);
 		window.requestFocus();
-		
-		
-		Calibrator cali = new Calibrator();
-		MouseController listener = new MouseController(cali , window);
-		Controller controller = new Controller();
 
-		
-		
+		Calibrator cali = new Calibrator();
+		MouseController listener = new MouseController(cali, window);
+		Controller controller = new Controller();
 
 		window.addKeyListener(listener);
 		window.addMouseListener(listener);
 		window.add(cali);
 		window.setVisible(true);
-		
+
 		// Create a sample listener and controller
 
 		// Have the sample listener receive events from the controller
