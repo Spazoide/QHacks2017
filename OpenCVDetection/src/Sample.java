@@ -30,9 +30,10 @@ class MouseController extends Listener implements KeyListener {
 	Robot robot;
 	private int[] yRange = new int[2];
 	private int[] xRange = new int[2];
+	private int zClick;
 	private boolean calibrationMode = true;
 	private int caliState = 0;
-	private Point[] corners = new Point[4];
+	private Vector[] corners = new Vector[4];
 	
 	private Calibrator c;
 	private boolean flag = false;
@@ -85,11 +86,11 @@ class MouseController extends Listener implements KeyListener {
     	if(calibrationMode){
     		
     		if(flag){
-    			corners[caliState] = new Point((int)finger.tipPosition().getX(), (int)finger.tipPosition().getY());
+    			corners[caliState] = finger.tipPosition();
     			flag = false;
     			caliState++;
     			if(caliState > 3){
-    				calcBounds(corners);
+    				calcBounds();
     				calibrationMode = false;
     				window.dispose();
     			}else{
@@ -103,7 +104,7 @@ class MouseController extends Listener implements KeyListener {
         // Get the most recent frame and report some basic information
        robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int) finger.tipPosition().getX()), window.getHeight()-map(yRange[0],yRange[1],0,window.getHeight(),(int) finger.tipPosition().getY()));
         	System.out.println(finger.tipPosition().toString());
-            if(finger.tipPosition().getZ()<-50){
+            if(finger.tipPosition().getZ()<zClick){
             	robot.mousePress(InputEvent.BUTTON1_MASK);
             	robot.mouseRelease(InputEvent.BUTTON1_MASK);
             }
@@ -117,13 +118,14 @@ class MouseController extends Listener implements KeyListener {
 		return (int) ((float) (value - rmin) / (rmax - rmin) * (vmax - vmin) + vmin);
 	}
 	
-	private void calcBounds(Point[] coords){
-		xRange[0] = (coords[0].x + coords[2].x)/2;
-		xRange[1] = (coords[1].x + coords[3].x)/2;
+	private void calcBounds(){
+		xRange[0] = (int) (corners[0].getX() + corners[2].getX()) /2;
+		xRange[1] = (int) ((corners[1].getX()  + corners[3].getX() )/2);
 		
-		yRange[0] = (coords[0].y + coords[1].y)/2;
-		yRange[1] = (coords[2].y + coords[3].y)/2;
+		yRange[0] = (int) ((corners[0].getY() + corners[1].getY() )/2);
+		yRange[1] = (int) ((corners[2].getY()  + corners[3].getY() )/2);
 		
+		zClick = (int) ((corners[0].getZ()+corners[1].getZ()+corners[2].getZ()+corners[3].getZ())/4);
 	}
 	
 
