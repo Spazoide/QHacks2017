@@ -75,7 +75,7 @@ class SampleListener extends Listener {
         	for(Finger finger: hand.fingers()){
         		if(finger.type()!=Finger.Type.TYPE_INDEX)
         			continue;
-        		a.mouseMove((int)finger.tipPosition().getX()+1920, 1080-map(60,190,0,1080,(int) finger.tipPosition().getY()));
+        		a.mouseMove(map(-165,165,0,1920,(int) finger.tipPosition().getX()), 1080-map(60,190,0,1080,(int) finger.tipPosition().getY()));
 	        	System.out.println(finger.tipPosition().toString());
 	            System.out.println("    " + finger.type() + ", id: " + finger.id()
                                  + ", length: " + finger.length()
