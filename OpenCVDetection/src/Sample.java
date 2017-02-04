@@ -101,7 +101,7 @@ class MouseController extends Listener implements KeyListener {
     		return;
     	}
         // Get the most recent frame and report some basic information
-       robot.mouseMove(map(-165,175,0,1920,(int) finger.tipPosition().getX()), 1080-map(120,305,0,1080,(int) finger.tipPosition().getY()));
+       robot.mouseMove(map(xRange[0],xRange[1],0,window.getWidth(),(int) finger.tipPosition().getX()), window.getHeight()-map(yRange[0],yRange[1],0,window.getHeight(),(int) finger.tipPosition().getY()));
         	System.out.println(finger.tipPosition().toString());
             if(finger.tipPosition().getZ()<-50){
             	robot.mousePress(InputEvent.BUTTON1_MASK);
@@ -154,7 +154,7 @@ class Sample {
 		JFrame window = new JFrame("Cali");
 		window.setSize(1920, 1080);
 		window.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);	
-		//window.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		window.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		window.setUndecorated(true);
 		window.setFocusable(true);
 		window.requestFocus();
