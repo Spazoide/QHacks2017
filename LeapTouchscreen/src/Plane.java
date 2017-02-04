@@ -88,13 +88,14 @@ public class Plane {
 	}
 	
 	public Plane offset(Vector pos){
-		float offsetValue = pos.getZ()-getPOI(pos, normal).getZ();
+		float offsetValue = getOffsetValue(pos);
 		Vector[][] vArray = new Vector[5][2];
 		for (int i = 0; i < vArray.length; i++) {
-			vArray[i][0] = new 
+			vArray[i][0] = vertices[i].plus(normal.times(offsetValue));
+			vArray[i][1] = dirs[i];
 		}
 		
-		return null;
+		return new Plane(vArray);
 		
 	}
 	
