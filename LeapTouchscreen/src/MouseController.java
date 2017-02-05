@@ -123,8 +123,8 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 //				break;
 //			}
 //		}
-		
-		if((finger = getFingers(frame)[1]) == null){
+		Finger[] allFingers = getFingers(frame);
+		if((finger = allFingers[1]) == null){
 			return;
 		}
 
@@ -147,29 +147,16 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		int[] pos = screenPlane.getPOIScaled(fingerPos, fingerDir, window.getWidth(), window.getHeight());
 		robot.mouseMove(pos[0], pos[1]);
 
-		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
-		// if (fingerPos.getZ() <= currentZ) {
-		// if(!clicked){
-		// robot.mousePress(InputEvent.BUTTON1_MASK);
-		// robot.mouseRelease(InputEvent.BUTTON1_MASK);
-		// clicked = true;
-		// }
-		// }else{
-		// clicked=false;
-		// }
-		if (fingerPos.getZ() - 5 <= currentZ && !clicked) {
-			robot.mousePress(InputEvent.BUTTON1_MASK);
-			clicked = true;
-
-		}
-		if (clicked && fingerPos.getZ() > currentZ) {
-			robot.mouseRelease(InputEvent.BUTTON1_MASK);
-			clicked = false;
+		//Recognizing gestures
+		if(allFingers[1].isExtended() && allFingers[2].isExtended() && allFingers[3].isExtended()){ //Scrolling
+			actionScroll(finger);
+		}else if(allFingers[1].isExtended() && allFingers[2].isExtended()){
+			actionDrag(finger);
+		}else if(allFingers[1].isExtended()){
+			actionClick(finger);
 		}
 		
-		if(finger.isExtended()){
-			System.out.println("finger is extended");
-		}
+		
 
 	}
 
