@@ -40,7 +40,7 @@ public class TrackerInstance implements Runnable, ActionListener {
 //			e1.printStackTrace();
 //		}
 //        final SystemTray tray = SystemTray.getSystemTray();
-       
+//       
 //        // Create a pop-up menu component
 //        MenuItem exitItem = new MenuItem("Exit");
 //        exitItem.addActionListener(this);

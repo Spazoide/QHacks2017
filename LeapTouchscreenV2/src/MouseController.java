@@ -96,7 +96,6 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	public void onFrame(Controller controller) {
 		if(!controller.isConnected()) return;
 		
-		System.out.println(controller.isConnected());
 		Finger finger = null;
 	
 		Frame frame = controller.frame();
@@ -155,7 +154,7 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	}
 	
 	private boolean isClickRegistered(float offset){
-		System.out.println(Boolean.toString(offset <= 10));		
+		
 		return offset <= 10;
 		
 	

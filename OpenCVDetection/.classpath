@@ -3,15 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/opencv"/>
-	<classpathentry kind="lib" path="C:/Users/david/Desktop/Qhacks Resources/opencv/build/java/opencv-320.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/david/Desktop/Qhacks Resources/opencv/build/java/x64"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/david/Desktop/LeapDeveloperKit_3.2.0+45899_win/LeapSDK/lib/LeapJava.jar">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="C:/Users/david/Desktop/LeapDeveloperKit_3.2.0+45899_win/LeapSDK/lib/x64"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/LeapJava"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
