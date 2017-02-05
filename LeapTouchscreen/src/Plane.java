@@ -54,7 +54,7 @@ public class Plane {
 	}
 	
 	public int[] getPOIScaled(Vector pos, Vector dir, int width, int height){
-		Vector newDir = getCorrectedDirection(pos, dir, width, height);
+		
 		Vector currentPos = getPOI(pos, dir);
 		Line3D xline = new Line3D(currentPos, v1);
 		Line3D yline = new Line3D(currentPos, v2);
@@ -64,6 +64,8 @@ public class Plane {
 		float xmin = xline.getPOI(lineBounds[1]).getX();
 		float xmax = xline.getPOI(lineBounds[2]).getX();
 		
+//		Vector newDir = getCorrectedDirection(pos, dir, (int)(xmax-xmin),(int)( ymin-ymax));
+//		currentPos = getPOI(pos, newDir);
 //		System.out.printf("X: %.2f - %.2f \t Y: %.2f - %.2f\n",xmin,xmax,ymin,ymax);
 		return new int[] {map(xmin,xmax,0,width,currentPos.getX()), map(ymin,ymax,0,height,currentPos.getY())};
 		
@@ -73,7 +75,7 @@ public class Plane {
 		double maxLen = Math.sqrt(width*width/4.+height*height/4);
 		double cornerWeights[] = new double[4];
 		double sum = 0;
-		
+				
 		for (int i = 0; i < cornerWeights.length; i++) {
 			double tempDist = pos.distanceTo(vertices[i])/maxLen;
 			cornerWeights[i] = tempDist>1?0:tempDist;
@@ -82,7 +84,7 @@ public class Plane {
 		
 		Vector v = dir.times((float) (1-(sum<1?sum:1)));
 		for (int i = 0; i < cornerWeights.length; i++) {
-			v.plus(dirs[i].times((float) cornerWeights[i]));
+			v.plus(dirs[i].times((float) ( cornerWeights[i]/sum)));
 		}
 		return v;
 	}
