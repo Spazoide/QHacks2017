@@ -1,5 +1,3 @@
-import java.awt.Point;
-
 import com.leapmotion.leap.Vector;
 
 public class Plane {

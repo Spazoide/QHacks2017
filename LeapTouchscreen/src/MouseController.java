@@ -8,31 +8,25 @@
 \******************************************************************************/
 
 import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.IOException;
-import java.lang.Math;
 
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
-import com.leapmotion.leap.*;
+import com.leapmotion.leap.Controller;
+import com.leapmotion.leap.Finger;
+import com.leapmotion.leap.Frame;
+import com.leapmotion.leap.Listener;
+import com.leapmotion.leap.Vector;
 
 class MouseController extends Listener implements KeyListener, MouseListener {
 
 	Robot robot;
-	private int[] yRange = new int[2];
-	private int[] xRange = new int[2];
-	private int zClick;
+	
 	private boolean calibrationMode = true;
 	private int caliState = 0;
 	private Vector[][] corners = new Vector[5][2];
@@ -42,8 +36,10 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private Calibrator c;
 	private boolean flag = false;
 	private Plane screenPlane;
-	private Plane exitPlane;
+	
 	private JFrame window;
+	
+	private float zOffset;
 
 	public MouseController(Calibrator c, JFrame window) {
 		this.c = c;
@@ -65,6 +61,14 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	public void onConnect(Controller controller) {
 		System.out.println("Connected");
 	}
+	
+	public void onServiceConnect(Controller controller) {
+		System.out.println("Service Connected");
+	}
+	
+	public void onServiceDisconnect(Controller controller) {
+		System.out.println("Service Disconnected");
+	}
 
 	public void onDisconnect(Controller controller) {
 		// Note: not dispatched when running in a debugger.
@@ -72,9 +76,9 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	}
 
 	private void calcBounds() {
-		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ())
-				/ 4);
+		
 		screenPlane = new Plane(corners);
+		zOffset = screenPlane.getOffsetValue(corners[4][0]);
 
 	}
 
@@ -97,16 +101,9 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	public void onFrame(Controller controller) {
 
 		Finger finger = null;
-		// controller.enableGesture(arg0);
+	
 		Frame frame = controller.frame();
-//		for (Hand hand : frame.hands()) {
-//			for (Finger f : hand.fingers()) {
-//				if (f.type() != Finger.Type.TYPE_INDEX)
-//					continue;
-//				finger = f;
-//				break;
-//			}
-//		}
+
 		Finger[] allFingers = getFingers(frame);
 		if((finger = allFingers[1]) == null){
 			return;
@@ -121,7 +118,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		// halt finger tracking.
 		Vector fingerPos = finger.stabilizedTipPosition();
 		Vector fingerDir = finger.direction();
-		if (screenPlane.getOffsetValue(fingerPos) > screenPlane.getOffsetValue(corners[4][0]) || screenPlane.getOffsetValue(allFingers[0].stabilizedTipPosition()) > screenPlane.getOffsetValue(corners[4][0])) {
+		if (screenPlane.getOffsetValue(fingerPos) > zOffset) {
 			return;
 		}
 
@@ -134,10 +131,11 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		System.out.printf("%s %s %s %s %s\n",Boolean.toString(allFingers[0].isExtended()), Boolean.toString(allFingers[1].isExtended()), Boolean.toString(allFingers[2].isExtended()), Boolean.toString(allFingers[3].isExtended()), Boolean.toString(allFingers[4].isExtended()));
 		//Recognizing gestures
 		if(allFingers[1].isExtended() && allFingers[2].isExtended() && allFingers[3].isExtended()){ //Scrolling
+			robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 			actionScroll(allFingers[2]);
 			//System.out.println("scrolling");
 		}else if(allFingers[1].isExtended() && allFingers[2].isExtended()){
-			actionDrag(allFingers[2]);
+			actionDrag(allFingers[1]);
 			//System.out.println("dragging");
 		}else if(allFingers[1].isExtended()){
 			robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
@@ -219,7 +217,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 public void actionRightClick(Finger f) {
 		
 		if (isClickRegistered(f)) {
-			if (!clicked) {
+			if (!rightClicked) {
 				robot.mousePress(InputEvent.BUTTON3_MASK);
 				robot.mouseRelease(InputEvent.BUTTON3_MASK);
 				rightClicked = true;
