@@ -40,7 +40,6 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	private Plane screenPlane;
 	private int offsetConst;
 	private JFrame window;
-	private int framesSinceClick=0;
 	private float zOffset;
 
 	public MouseController(Calibrator c, JFrame window) {
@@ -66,7 +65,6 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		onFrame(controller);
-		framesSinceClick++;
 		
 	}
 
@@ -123,8 +121,8 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 		float screenOffset = screenPlane.getOffsetValue(fingerPos);
 		if (screenOffset > zOffset) {
 			if(dragged){
-				dragged=false;
-				robot.mouseRelease(InputEvent.BUTTON1_MASK);
+				dragged = false;
+				robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 			}
 			return;
 		}
@@ -142,7 +140,7 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 			robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 			actionScroll(allFingers[2], screenOffset);
 			//System.out.println("scrolling");
-		}else if(allFingers[1].isExtended() && allFingers[2].isExtended()){
+		}else if((allFingers[1].isExtended() && allFingers[2].isExtended()) || dragged ){
 			actionDrag(allFingers[1], screenOffset);
 			//System.out.println("dragging");
 		}else if(allFingers[1].isExtended()){
@@ -191,23 +189,17 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	}
 	
 	public void actionDrag(Finger f, float offset){
-		actionClick(f, offset);
+		if ((int)(f.tipVelocity().getZ()) < -75 && !dragged) {
+		
+			robot.mousePress(InputEvent.BUTTON1_MASK);
+			dragged = true;
+		}
 	}
 	
 	public void actionClick(Finger f, float offset) {
 		//System.out.println(f.tipVelocity().getZ());
 		if ((int)(f.tipVelocity().getZ()) < -75) {
-			if(dragged){
-				dragged=false;
-				robot.mouseRelease(InputEvent.BUTTON1_MASK);
-			}
 			if (!clicked) {
-				if(framesSinceClick<30){
-					robot.mousePress(InputEvent.BUTTON1_MASK);
-					dragged=true;
-					return;
-				}
-				framesSinceClick=0;
 				robot.mousePress(InputEvent.BUTTON1_MASK);
 				robot.mouseRelease(InputEvent.BUTTON1_MASK);
 				clicked = true;
@@ -215,6 +207,7 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 		} else {
 			clicked = false;
 		}
+		
 	}
 	
 	
