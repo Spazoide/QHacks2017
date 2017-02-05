@@ -108,7 +108,8 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	public void onExit(Controller controller) {
 		System.out.println("Exited");
 	}
-
+	
+	
 	public void onFrame(Controller controller) {
 
 		Finger finger = null;
@@ -165,6 +166,10 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 			robot.mouseRelease(InputEvent.BUTTON1_MASK);
 			clicked = false;
 		}
+		
+		if(finger.isExtended()){
+			System.out.println("finger is extended");
+		}
 
 	}
 
@@ -195,6 +200,40 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 
 		}
 
+	}
+	
+	public void actionDrag(Finger f){
+		
+		Vector fingerPos = f.stabilizedTipPosition();
+		Vector fingerDir = f.direction();
+		
+		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
+		if (fingerPos.getZ() - 5 <= currentZ && !clicked) {
+			robot.mousePress(InputEvent.BUTTON1_MASK);
+			clicked = true;
+
+		}
+		if (clicked && fingerPos.getZ() > currentZ) {
+			robot.mouseRelease(InputEvent.BUTTON1_MASK);
+			clicked = false;
+		}
+				
+	}
+	
+	public void actionClick(Finger f) {
+		Vector fingerPos = f.stabilizedTipPosition();
+		Vector fingerDir = f.direction();
+		
+		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
+		if (fingerPos.getZ() <= currentZ) {
+			if (!clicked) {
+				robot.mousePress(InputEvent.BUTTON1_MASK);
+				robot.mouseRelease(InputEvent.BUTTON1_MASK);
+				clicked = true;
+			}
+		} else {
+			clicked = false;
+		}
 	}
 
 	@Override
