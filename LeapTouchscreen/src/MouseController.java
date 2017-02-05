@@ -37,6 +37,8 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private boolean flag = false;
 	private Plane screenPlane;
 	
+	private int offsetConst;
+	
 	private JFrame window;
 	
 	private float zOffset;
@@ -79,6 +81,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		
 		screenPlane = new Plane(corners);
 		zOffset = screenPlane.getOffsetValue(corners[4][0]);
+		//offsetConst = (int)((screenPlane.getOffsetValue(corners[0][0]) + screenPlane.getOffsetValue(corners[1][0]) + screenPlane.getOffsetValue(corners[2][0]) + screenPlane.getOffsetValue(corners[3][0]))/4);
 
 	}
 
@@ -130,6 +133,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 
 		// Get the most recent frame and report some basic information
 		int[] pos = screenPlane.getPOIScaled(fingerPos, fingerDir, window.getWidth(), window.getHeight());
+		System.out.printf("x:%d \t y:%d \n", pos[0], pos[1]);
 		robot.mouseMove(pos[0], pos[1]);
 
 		//System.out.printf("%s %s %s %s %s\n",Boolean.toString(allFingers[0].isExtended()), Boolean.toString(allFingers[1].isExtended()), Boolean.toString(allFingers[2].isExtended()), Boolean.toString(allFingers[3].isExtended()), Boolean.toString(allFingers[4].isExtended()));
@@ -154,7 +158,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	
 	private boolean isClickRegistered(float offset){
 		System.out.println(offset);		
-		return offset <= 6;
+		return offset <= 8;
 		
 	
 	}
