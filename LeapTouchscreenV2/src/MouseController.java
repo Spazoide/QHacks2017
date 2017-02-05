@@ -38,11 +38,9 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	private Calibrator c;
 	private boolean flag = false;
 	private Plane screenPlane;
-	
 	private int offsetConst;
-	
 	private JFrame window;
-	
+	private int framesSinceClick=0;
 	private float zOffset;
 
 	public MouseController(Calibrator c, JFrame window) {
@@ -68,6 +66,7 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		onFrame(controller);
+		framesSinceClick++;
 		
 	}
 
@@ -123,6 +122,10 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 		
 		float screenOffset = screenPlane.getOffsetValue(fingerPos);
 		if (screenOffset > zOffset) {
+			if(dragged){
+				dragged=false;
+				robot.mouseRelease(InputEvent.BUTTON1_MASK);
+			}
 			return;
 		}
 
@@ -188,24 +191,23 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	}
 	
 	public void actionDrag(Finger f, float offset){
-		boolean isRegistered = isClickRegistered(offset);
-		
-		if (isRegistered && !dragged) {
-			robot.mousePress(InputEvent.BUTTON1_MASK);
-			dragged = true;
-
-		}
-		if (dragged && offset > 11) {
-			robot.mouseRelease(InputEvent.BUTTON1_MASK);
-			dragged = false;
-		}
-				
+		actionClick(f, offset);
 	}
 	
 	public void actionClick(Finger f, float offset) {
 		//System.out.println(f.tipVelocity().getZ());
 		if ((int)(f.tipVelocity().getZ()) < -75) {
+			if(dragged){
+				dragged=false;
+				robot.mouseRelease(InputEvent.BUTTON1_MASK);
+			}
 			if (!clicked) {
+				if(framesSinceClick<30){
+					robot.mousePress(InputEvent.BUTTON1_MASK);
+					dragged=true;
+					return;
+				}
+				framesSinceClick=0;
 				robot.mousePress(InputEvent.BUTTON1_MASK);
 				robot.mouseRelease(InputEvent.BUTTON1_MASK);
 				clicked = true;
@@ -214,6 +216,8 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 			clicked = false;
 		}
 	}
+	
+	
 	
 public void actionRightClick(Finger f, float offset) {
 		
