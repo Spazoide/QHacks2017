@@ -111,6 +111,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 
 		if (calibrationMode) {
 			calibrationMode(finger);
+			c.repaint();
 			return;
 		}
 
@@ -172,14 +173,11 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
 						{ window.getWidth(), window.getHeight() }, { window.getWidth() / 2, window.getHeight() / 2 } };
 				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
-				c.text = true;
-				c.repaint();
-
+				
 			} else {
 				int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
 						{ window.getWidth(), window.getHeight() }, { window.getWidth() / 2, window.getHeight() / 2 } };
 				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
-				c.repaint();
 			}
 
 		}
