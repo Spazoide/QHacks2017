@@ -37,6 +37,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private int caliState = 0;
 	private Vector[][] corners = new Vector[5][2];
 	private boolean clicked = false;
+	private boolean dragged = false;
 	private Calibrator c;
 	private boolean flag = false;
 	private Plane screenPlane;
@@ -57,7 +58,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+				
 	}
 
 	public void onConnect(Controller controller) {
@@ -77,32 +78,14 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	}
 
 	private Finger[] getFingers(Frame frame) {
-		Finger[] fingers;
-		for (Finger f : frame.fingers()) {
-			for (Finger t : frame.fingers()) {
-				for (Finger p : frame.fingers()) {
-					for (Finger m : frame.fingers()) {
-						for (Finger r : frame.fingers()) {
-							if (f.type() == Finger.Type.TYPE_INDEX) {
-
-								if (t.type() == Finger.Type.TYPE_THUMB) {
-									if (p.type() == Finger.Type.TYPE_PINKY) {
-										if (m.type() == Finger.Type.TYPE_MIDDLE) {
-											if (r.type() == Finger.Type.TYPE_RING) {
-													
-												fingers = new Finger[]{t,f,m,r,p};
-												return fingers;
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+		if(frame.fingers().isEmpty()){
+			return null;
 		}
-		return null;
+		Finger[] fingers = new Finger[5];
+		for (Finger f : frame.fingers()) {
+			fingers[f.type().ordinal()] = f;
+		}
+		return fingers;
 	}
 
 	public void onExit(Controller controller) {
@@ -147,17 +130,29 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		int[] pos = screenPlane.getPOIScaled(fingerPos, fingerDir, window.getWidth(), window.getHeight());
 		robot.mouseMove(pos[0], pos[1]);
 
+		System.out.printf("%s %s %s %s %s\n",Boolean.toString(allFingers[0].isExtended()), Boolean.toString(allFingers[1].isExtended()), Boolean.toString(allFingers[2].isExtended()), Boolean.toString(allFingers[3].isExtended()), Boolean.toString(allFingers[4].isExtended()));
 		//Recognizing gestures
 		if(allFingers[1].isExtended() && allFingers[2].isExtended() && allFingers[3].isExtended()){ //Scrolling
-			actionScroll(finger);
+			actionScroll(allFingers[2]);
+			//System.out.println("scrolling");
 		}else if(allFingers[1].isExtended() && allFingers[2].isExtended()){
-			actionDrag(finger);
+			actionDrag(allFingers[2]);
+			//System.out.println("dragging");
 		}else if(allFingers[1].isExtended()){
 			actionClick(finger);
+			//System.out.println("clicking");
 		}
 		
 		
-
+	}
+	
+	private boolean isClickRegistered(Finger f){
+		Vector fingerPos = f.stabilizedTipPosition();
+		Vector fingerDir = f.direction();
+		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
+		
+		return fingerPos.getZ() <= currentZ+3;
+	
 	}
 
 	private void calibrationMode(Finger finger) {
@@ -190,29 +185,23 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	}
 	
 	public void actionDrag(Finger f){
+		boolean isRegistered = isClickRegistered(f);
 		
-		Vector fingerPos = f.stabilizedTipPosition();
-		Vector fingerDir = f.direction();
-		
-		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
-		if (fingerPos.getZ() - 5 <= currentZ && !clicked) {
+		if (isRegistered && !dragged) {
 			robot.mousePress(InputEvent.BUTTON1_MASK);
-			clicked = true;
+			dragged = true;
 
 		}
-		if (clicked && fingerPos.getZ() > currentZ) {
+		if (dragged && !isRegistered) {
 			robot.mouseRelease(InputEvent.BUTTON1_MASK);
-			clicked = false;
+			dragged = false;
 		}
 				
 	}
 	
 	public void actionClick(Finger f) {
-		Vector fingerPos = f.stabilizedTipPosition();
-		Vector fingerDir = f.direction();
 		
-		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
-		if (fingerPos.getZ() <= currentZ) {
+		if (isClickRegistered(f)) {
 			if (!clicked) {
 				robot.mousePress(InputEvent.BUTTON1_MASK);
 				robot.mouseRelease(InputEvent.BUTTON1_MASK);
@@ -224,13 +213,11 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	}
 	
 	public void actionScroll(Finger f){
-		Vector fingerPos = f.stabilizedTipPosition();
-		Vector fingerDir = f.direction();
-		Vector fingerVel = f.tipVelocity();
 		
-		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
-		if(fingerPos.getZ() <= currentZ){
-			
+		float fingerVely = f.tipVelocity().getY()/200;
+				
+		if(isClickRegistered(f)){
+			robot.mouseWheel((int)fingerVely);
 		}
 	}
 
