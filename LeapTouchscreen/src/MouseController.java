@@ -73,7 +73,36 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ())
 				/ 4);
 		screenPlane = new Plane(corners);
-	
+
+	}
+
+	private Finger[] getFingers(Frame frame) {
+		Finger[] fingers;
+		for (Finger f : frame.fingers()) {
+			for (Finger t : frame.fingers()) {
+				for (Finger p : frame.fingers()) {
+					for (Finger m : frame.fingers()) {
+						for (Finger r : frame.fingers()) {
+							if (f.type() == Finger.Type.TYPE_INDEX) {
+
+								if (t.type() == Finger.Type.TYPE_THUMB) {
+									if (p.type() == Finger.Type.TYPE_PINKY) {
+										if (m.type() == Finger.Type.TYPE_MIDDLE) {
+											if (r.type() == Finger.Type.TYPE_RING) {
+													
+												fingers = new Finger[]{t,f,m,r,p};
+												return fingers;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	public void onExit(Controller controller) {
@@ -81,17 +110,21 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	}
 
 	public void onFrame(Controller controller) {
-		
+
 		Finger finger = null;
-		//controller.enableGesture(arg0);
+		// controller.enableGesture(arg0);
 		Frame frame = controller.frame();
-		for (Hand hand : frame.hands()) {
-			for (Finger f : hand.fingers()) {
-				if (f.type() != Finger.Type.TYPE_INDEX)
-					continue;
-				finger = f;
-				break;
-			}
+//		for (Hand hand : frame.hands()) {
+//			for (Finger f : hand.fingers()) {
+//				if (f.type() != Finger.Type.TYPE_INDEX)
+//					continue;
+//				finger = f;
+//				break;
+//			}
+//		}
+		
+		if((finger = getFingers(frame)[1]) == null){
+			return;
 		}
 
 		if (calibrationMode) {
@@ -114,30 +147,29 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		robot.mouseMove(pos[0], pos[1]);
 
 		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
-//		if (fingerPos.getZ() <= currentZ) {
-//			if(!clicked){
-//				robot.mousePress(InputEvent.BUTTON1_MASK);
-//				robot.mouseRelease(InputEvent.BUTTON1_MASK);
-//				clicked = true;
-//			}
-//		}else{
-//			clicked=false;
-//		}
-		if (fingerPos.getZ()-5 <= currentZ && !clicked) {
-		robot.mousePress(InputEvent.BUTTON1_MASK);
-		clicked=true;
-		
-	}
-	if(clicked &&fingerPos.getZ() > currentZ ){
-		robot.mouseRelease(InputEvent.BUTTON1_MASK);
-		clicked=false;		
-	}
-		
+		// if (fingerPos.getZ() <= currentZ) {
+		// if(!clicked){
+		// robot.mousePress(InputEvent.BUTTON1_MASK);
+		// robot.mouseRelease(InputEvent.BUTTON1_MASK);
+		// clicked = true;
+		// }
+		// }else{
+		// clicked=false;
+		// }
+		if (fingerPos.getZ() - 5 <= currentZ && !clicked) {
+			robot.mousePress(InputEvent.BUTTON1_MASK);
+			clicked = true;
+
+		}
+		if (clicked && fingerPos.getZ() > currentZ) {
+			robot.mouseRelease(InputEvent.BUTTON1_MASK);
+			clicked = false;
+		}
 
 	}
 
 	private void calibrationMode(Finger finger) {
-	
+
 		if (flag) {
 			corners[caliState][0] = finger.tipPosition();
 			corners[caliState][1] = finger.direction();
@@ -153,16 +185,16 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
 				c.text = true;
 				c.repaint();
-	
+
 			} else {
 				int[][] cornerCoords = { { 0, 0 }, { window.getWidth(), 0 }, { 0, window.getHeight() },
 						{ window.getWidth(), window.getHeight() }, { window.getWidth() / 2, window.getHeight() / 2 } };
 				c.setCirclePos(cornerCoords[caliState][0], cornerCoords[caliState][1]);
 				c.repaint();
 			}
-	
+
 		}
-	
+
 	}
 
 	@Override
