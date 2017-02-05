@@ -31,28 +31,28 @@ public class TrackerInstance implements Runnable, ActionListener {
 		window.setFocusable(true);
 		window.requestFocus();
 		
-		final PopupMenu popup = new PopupMenu();
-		TrayIcon trayIcon = null;
-		try {
-			trayIcon = new TrayIcon(ImageIO.read(new File("icon.png")),"Leap Tracker");
-		} catch (IOException e1) {
-
-			e1.printStackTrace();
-		}
-        final SystemTray tray = SystemTray.getSystemTray();
-       
-        // Create a pop-up menu component
-        MenuItem exitItem = new MenuItem("Exit");
-        exitItem.addActionListener(this);
-        popup.add(exitItem);
-       
-        trayIcon.setPopupMenu(popup);
-       
-        try {
-            tray.add(trayIcon);
-        } catch (AWTException e) {
-            System.out.println("TrayIcon could not be added.");
-        }
+//		final PopupMenu popup = new PopupMenu();
+//		TrayIcon trayIcon = null;
+//		try {
+//			trayIcon = new TrayIcon(ImageIO.read(new File("icon.png")),"Leap Tracker");
+//		} catch (IOException e1) {
+//
+//			e1.printStackTrace();
+//		}
+//        final SystemTray tray = SystemTray.getSystemTray();
+//       
+//        // Create a pop-up menu component
+//        MenuItem exitItem = new MenuItem("Exit");
+//        exitItem.addActionListener(this);
+//        popup.add(exitItem);
+//       
+//        trayIcon.setPopupMenu(popup);
+//       
+//        try {
+//            tray.add(trayIcon);
+//        } catch (AWTException e) {
+//            System.out.println("TrayIcon could not be added.");
+//        }
 		
 
 		Calibrator cali = new Calibrator();
