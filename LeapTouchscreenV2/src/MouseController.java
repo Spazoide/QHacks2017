@@ -9,6 +9,8 @@
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,17 +18,17 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
+import javax.swing.Timer;
 
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Finger;
 import com.leapmotion.leap.Frame;
-import com.leapmotion.leap.Listener;
 import com.leapmotion.leap.Vector;
 
-class MouseController extends Listener implements KeyListener, MouseListener {
+class MouseController implements KeyListener, MouseListener, ActionListener {
 
 	Robot robot;
-	
+	public Controller controller = null;
 	private boolean calibrationMode = true;
 	private int caliState = 0;
 	private Vector[][] corners = new Vector[5][2];
@@ -44,39 +46,30 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private float zOffset;
 
 	public MouseController(Calibrator c, JFrame window) {
+		controller = new Controller();
+		controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
 		this.c = c;
 		this.window = window;
-
-	}
-
-	public void onInit(Controller controller) {
-		System.out.println("Initialized");
+		
+		Timer time = new Timer(16, this);
+		
 		try {
 			robot = new Robot();
 		} catch (AWTException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-				
-	}
 
-	public void onConnect(Controller controller) {
-		System.out.println("Connected");
 	}
 	
-	public void onServiceConnect(Controller controller) {
-		System.out.println("Service Connected");
-	}
 	
-	public void onServiceDisconnect(Controller controller) {
-		System.out.println("Service Disconnected");
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		onFrame(controller);
 	}
 
-	public void onDisconnect(Controller controller) {
-		// Note: not dispatched when running in a debugger.
-		System.out.println("Disconnected");
-	}
-
+	
 	private void calcBounds() {
 		
 		screenPlane = new Plane(corners);
@@ -288,4 +281,6 @@ public void actionRightClick(Finger f, float offset) {
 		// TODO Auto-generated method stub
 
 	}
+
+	
 }
