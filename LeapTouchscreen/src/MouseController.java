@@ -235,6 +235,17 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 			clicked = false;
 		}
 	}
+	
+	public void actionScroll(Finger f){
+		Vector fingerPos = f.stabilizedTipPosition();
+		Vector fingerDir = f.direction();
+		Vector fingerVel = f.tipVelocity();
+		
+		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
+		if(fingerPos.getZ() <= currentZ){
+			
+		}
+	}
 
 	@Override
 	public void keyPressed(KeyEvent e) {
