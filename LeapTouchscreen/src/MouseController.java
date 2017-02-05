@@ -113,14 +113,14 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		robot.mouseMove(pos[0], pos[1]);
 
 		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
-		if (fingerPos.getZ() <= currentZ) {
-			if(!clicked){
-				robot.mousePress(InputEvent.BUTTON1_MASK);
-				robot.mouseRelease(InputEvent.BUTTON1_MASK);
-				clicked = true;
-			}
-		}else{
-			clicked=false;
+		if (fingerPos.getZ() <= currentZ && !clicked) {
+			robot.mousePress(InputEvent.BUTTON1_MASK);
+			clicked=true;
+			
+		}
+		if(clicked &&fingerPos.getZ() > currentZ ){
+			clicked=false;			
+			robot.mouseRelease(InputEvent.BUTTON1_MASK);
 		}
 		
 

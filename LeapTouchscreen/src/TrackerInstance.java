@@ -5,23 +5,28 @@ import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.WindowConstants;
 
 import com.leapmotion.leap.Controller;
 
-public class TrackerInstance implements Runnable {
+public class TrackerInstance implements Runnable, ActionListener {
 
+	boolean stop = false;
 	@Override
 	public void run() {
 
 		JFrame window = new JFrame("Cali");
 		window.setSize(1920, 1080);
-		window.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+		window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		window.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		window.setUndecorated(true);
 		window.setFocusable(true);
@@ -32,33 +37,14 @@ public class TrackerInstance implements Runnable {
 		try {
 			trayIcon = new TrayIcon(ImageIO.read(new File("icon.png")),"Leap Tracker");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
+
 			e1.printStackTrace();
 		}
         final SystemTray tray = SystemTray.getSystemTray();
        
-        // Create a pop-up menu components
-        MenuItem aboutItem = new MenuItem("About");
-        CheckboxMenuItem cb1 = new CheckboxMenuItem("Set auto size");
-        CheckboxMenuItem cb2 = new CheckboxMenuItem("Set tooltip");
-        Menu displayMenu = new Menu("Display");
-        MenuItem errorItem = new MenuItem("Error");
-        MenuItem warningItem = new MenuItem("Warning");
-        MenuItem infoItem = new MenuItem("Info");
-        MenuItem noneItem = new MenuItem("None");
+        // Create a pop-up menu component
         MenuItem exitItem = new MenuItem("Exit");
-       
-        //Add components to pop-up menu
-        popup.add(aboutItem);
-        popup.addSeparator();
-        popup.add(cb1);
-        popup.add(cb2);
-        popup.addSeparator();
-        popup.add(displayMenu);
-        displayMenu.add(errorItem);
-        displayMenu.add(warningItem);
-        displayMenu.add(infoItem);
-        displayMenu.add(noneItem);
+        exitItem.addActionListener(this);
         popup.add(exitItem);
        
         trayIcon.setPopupMenu(popup);
@@ -73,7 +59,7 @@ public class TrackerInstance implements Runnable {
 		Calibrator cali = new Calibrator();
 		MouseController listener = new MouseController(cali, window);
 		Controller controller = new Controller();
-
+		controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
 		window.addKeyListener(listener);
 		window.addMouseListener(listener);
 		window.add(cali);
@@ -83,17 +69,22 @@ public class TrackerInstance implements Runnable {
 
 		// Have the sample listener receive events from the controller
 		controller.addListener(listener);
-
+		
 		// Keep this process running until Enter is pressed
-		System.out.println("Press Enter to quit...");
-		try {
-			System.in.read();
-		} catch (IOException e) {
-			e.printStackTrace();
+		while(!stop){
+		
 		}
-
+	
 		// Remove the sample listener when done
 		controller.removeListener(listener);
+		
+		
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("F");
+		stop=true;
 		
 	}
 
