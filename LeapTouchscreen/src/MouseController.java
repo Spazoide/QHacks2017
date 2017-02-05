@@ -83,6 +83,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	public void onFrame(Controller controller) {
 		
 		Finger finger = null;
+		//controller.enableGesture(arg0);
 		Frame frame = controller.frame();
 		for (Hand hand : frame.hands()) {
 			for (Finger f : hand.fingers()) {
@@ -100,7 +101,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 
 		// if current offset is bigger then calibrated offset exit the method to
 		// halt finger tracking.
-		Vector fingerPos = finger.tipPosition();
+		Vector fingerPos = finger.stabilizedTipPosition();
 		Vector fingerDir = finger.direction();
 		if (screenPlane.getOffsetValue(fingerPos) > screenPlane.getOffsetValue(corners[4][0])) {
 			return;
