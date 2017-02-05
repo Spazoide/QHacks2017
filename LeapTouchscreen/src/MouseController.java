@@ -38,6 +38,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	private Vector[][] corners = new Vector[5][2];
 	private boolean clicked = false;
 	private boolean dragged = false;
+	private boolean rightClicked = false;
 	private Calibrator c;
 	private boolean flag = false;
 	private Plane screenPlane;
@@ -120,7 +121,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		// halt finger tracking.
 		Vector fingerPos = finger.stabilizedTipPosition();
 		Vector fingerDir = finger.direction();
-		if (screenPlane.getOffsetValue(fingerPos) > screenPlane.getOffsetValue(corners[4][0])) {
+		if (screenPlane.getOffsetValue(fingerPos) > screenPlane.getOffsetValue(corners[4][0]) || screenPlane.getOffsetValue(allFingers[0].stabilizedTipPosition()) > screenPlane.getOffsetValue(corners[4][0])) {
 			return;
 		}
 
@@ -139,8 +140,11 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 			actionDrag(allFingers[2]);
 			//System.out.println("dragging");
 		}else if(allFingers[1].isExtended()){
+			robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 			actionClick(finger);
 			//System.out.println("clicking");
+		}else if(allFingers[0].isExtended()){
+			actionRightClick(allFingers[0]);
 		}
 		
 		
@@ -209,6 +213,19 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 			}
 		} else {
 			clicked = false;
+		}
+	}
+	
+public void actionRightClick(Finger f) {
+		
+		if (isClickRegistered(f)) {
+			if (!clicked) {
+				robot.mousePress(InputEvent.BUTTON3_MASK);
+				robot.mouseRelease(InputEvent.BUTTON3_MASK);
+				rightClicked = true;
+			}
+		} else {
+			rightClicked = false;
 		}
 	}
 	
