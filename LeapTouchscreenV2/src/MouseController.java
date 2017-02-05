@@ -52,6 +52,7 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 		this.window = window;
 		
 		Timer time = new Timer(16, this);
+		time.start();
 		
 		try {
 			robot = new Robot();
@@ -67,6 +68,7 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
 		onFrame(controller);
+		
 	}
 
 	
@@ -95,7 +97,9 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	
 	
 	public void onFrame(Controller controller) {
-
+		if(!controller.isConnected()) return;
+		
+		System.out.println(controller.isConnected());
 		Finger finger = null;
 	
 		Frame frame = controller.frame();
@@ -199,8 +203,8 @@ class MouseController implements KeyListener, MouseListener, ActionListener {
 	}
 	
 	public void actionClick(Finger f, float offset) {
-		
-		if (isClickRegistered(offset)) {
+		//System.out.println(f.tipVelocity().getZ());
+		if ((int)(f.tipVelocity().getZ()) < -75) {
 			if (!clicked) {
 				robot.mousePress(InputEvent.BUTTON1_MASK);
 				robot.mouseRelease(InputEvent.BUTTON1_MASK);
