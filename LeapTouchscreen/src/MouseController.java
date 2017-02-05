@@ -73,7 +73,6 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		zClick = (int) ((corners[0][0].getZ() + corners[1][0].getZ() + corners[2][0].getZ() + corners[3][0].getZ())
 				/ 4);
 		screenPlane = new Plane(corners);
-		// exitPlane = screenPlane.offset(corners[4][0]);
 	
 	}
 
@@ -82,6 +81,7 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	}
 
 	public void onFrame(Controller controller) {
+		
 		Finger finger = null;
 		Frame frame = controller.frame();
 		for (Hand hand : frame.hands()) {
@@ -113,15 +113,24 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		robot.mouseMove(pos[0], pos[1]);
 
 		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
-		if (fingerPos.getZ() <= currentZ) {
-			if(!clicked){
-				robot.mousePress(InputEvent.BUTTON1_MASK);
-				robot.mouseRelease(InputEvent.BUTTON1_MASK);
-				clicked = true;
-			}
-		}else{
-			clicked=false;
-		}
+//		if (fingerPos.getZ() <= currentZ) {
+//			if(!clicked){
+//				robot.mousePress(InputEvent.BUTTON1_MASK);
+//				robot.mouseRelease(InputEvent.BUTTON1_MASK);
+//				clicked = true;
+//			}
+//		}else{
+//			clicked=false;
+//		}
+		if (fingerPos.getZ()-5 <= currentZ && !clicked) {
+		robot.mousePress(InputEvent.BUTTON1_MASK);
+		clicked=true;
+		
+	}
+	if(clicked &&fingerPos.getZ() > currentZ ){
+		robot.mouseRelease(InputEvent.BUTTON1_MASK);
+		clicked=false;		
+	}
 		
 
 	}
@@ -159,7 +168,6 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
 		flag = true;
-		System.out.println("key");
 
 	}
 

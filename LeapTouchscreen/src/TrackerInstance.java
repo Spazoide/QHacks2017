@@ -21,10 +21,14 @@ import com.leapmotion.leap.Controller;
 public class TrackerInstance implements Runnable, ActionListener {
 
 	boolean stop = false;
+	Controller controller = null;
+	JFrame window = null;
+	MouseController listener = null;
+	
 	@Override
 	public void run() {
 
-		JFrame window = new JFrame("Cali");
+		window = new JFrame("Cali");
 		window.setSize(1920, 1080);
 		window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		window.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -57,8 +61,8 @@ public class TrackerInstance implements Runnable, ActionListener {
 		
 
 		Calibrator cali = new Calibrator();
-		MouseController listener = new MouseController(cali, window);
-		Controller controller = new Controller();
+		listener = new MouseController(cali, window);
+		controller = new Controller();
 		controller.setPolicy(Controller.PolicyFlag.POLICY_BACKGROUND_FRAMES);
 		window.addKeyListener(listener);
 		window.addMouseListener(listener);
@@ -72,19 +76,18 @@ public class TrackerInstance implements Runnable, ActionListener {
 		
 		// Keep this process running until Enter is pressed
 		while(!stop){
-		
+			
 		}
-	
-		// Remove the sample listener when done
-		controller.removeListener(listener);
 		
 		
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("F");
-		stop=true;
+		controller.removeListener(listener);
+		window.dispose();
+		window=null;
+		System.exit(0);
 		
 	}
 
