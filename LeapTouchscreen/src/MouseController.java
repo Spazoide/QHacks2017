@@ -105,9 +105,10 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		Frame frame = controller.frame();
 
 		Finger[] allFingers = getFingers(frame);
-		if((finger = allFingers[1]) == null){
+		if(allFingers == null){
 			return;
 		}
+		finger = allFingers[1];
 
 		if (calibrationMode) {
 			calibrationMode(finger);
@@ -119,7 +120,9 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		// halt finger tracking.
 		Vector fingerPos = finger.stabilizedTipPosition();
 		Vector fingerDir = finger.direction();
-		if (screenPlane.getOffsetValue(fingerPos) > zOffset) {
+		
+		float screenOffset = screenPlane.getOffsetValue(fingerPos);
+		if (screenOffset > zOffset) {
 			return;
 		}
 
@@ -129,32 +132,30 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		int[] pos = screenPlane.getPOIScaled(fingerPos, fingerDir, window.getWidth(), window.getHeight());
 		robot.mouseMove(pos[0], pos[1]);
 
-		System.out.printf("%s %s %s %s %s\n",Boolean.toString(allFingers[0].isExtended()), Boolean.toString(allFingers[1].isExtended()), Boolean.toString(allFingers[2].isExtended()), Boolean.toString(allFingers[3].isExtended()), Boolean.toString(allFingers[4].isExtended()));
+		//System.out.printf("%s %s %s %s %s\n",Boolean.toString(allFingers[0].isExtended()), Boolean.toString(allFingers[1].isExtended()), Boolean.toString(allFingers[2].isExtended()), Boolean.toString(allFingers[3].isExtended()), Boolean.toString(allFingers[4].isExtended()));
 		//Recognizing gestures
 		if(allFingers[1].isExtended() && allFingers[2].isExtended() && allFingers[3].isExtended()){ //Scrolling
 			robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-			actionScroll(allFingers[2]);
+			actionScroll(allFingers[2], screenOffset);
 			//System.out.println("scrolling");
 		}else if(allFingers[1].isExtended() && allFingers[2].isExtended()){
-			actionDrag(allFingers[1]);
+			actionDrag(allFingers[1], screenOffset);
 			//System.out.println("dragging");
 		}else if(allFingers[1].isExtended()){
 			robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-			actionClick(finger);
+			actionClick(finger, screenOffset);
 			//System.out.println("clicking");
 		}else if(allFingers[0].isExtended()){
-			actionRightClick(allFingers[0]);
+			actionRightClick(allFingers[0], screenOffset);
 		}
 		
 		
 	}
 	
-	private boolean isClickRegistered(Finger f){
-		Vector fingerPos = f.stabilizedTipPosition();
-		Vector fingerDir = f.direction();
-		float currentZ = screenPlane.getPOI(fingerPos, fingerDir).getZ();
+	private boolean isClickRegistered(float offset){
+		System.out.println(offset);		
+		return offset <= 6;
 		
-		return fingerPos.getZ() <= currentZ+3;
 	
 	}
 
@@ -184,8 +185,8 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 
 	}
 	
-	public void actionDrag(Finger f){
-		boolean isRegistered = isClickRegistered(f);
+	public void actionDrag(Finger f, float offset){
+		boolean isRegistered = isClickRegistered(offset);
 		
 		if (isRegistered && !dragged) {
 			robot.mousePress(InputEvent.BUTTON1_MASK);
@@ -199,9 +200,9 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 				
 	}
 	
-	public void actionClick(Finger f) {
+	public void actionClick(Finger f, float offset) {
 		
-		if (isClickRegistered(f)) {
+		if (isClickRegistered(offset)) {
 			if (!clicked) {
 				robot.mousePress(InputEvent.BUTTON1_MASK);
 				robot.mouseRelease(InputEvent.BUTTON1_MASK);
@@ -212,9 +213,9 @@ class MouseController extends Listener implements KeyListener, MouseListener {
 		}
 	}
 	
-public void actionRightClick(Finger f) {
+public void actionRightClick(Finger f, float offset) {
 		
-		if (isClickRegistered(f)) {
+		if (isClickRegistered(offset)) {
 			if (!rightClicked) {
 				robot.mousePress(InputEvent.BUTTON3_MASK);
 				robot.mouseRelease(InputEvent.BUTTON3_MASK);
@@ -225,11 +226,11 @@ public void actionRightClick(Finger f) {
 		}
 	}
 	
-	public void actionScroll(Finger f){
+	public void actionScroll(Finger f , float offset){
 		
 		float fingerVely = f.tipVelocity().getY()/200;
 				
-		if(isClickRegistered(f)){
+		if(isClickRegistered(offset)){
 			robot.mouseWheel((int)fingerVely);
 		}
 	}
